@@ -4,19 +4,21 @@
   "description": "A JavaScript implementation of the IPLD HashMap specification",
   "main": "ipld-hashmap.js",
   "scripts": {
-    "test": "tap test*js",
-    "lint": "npx standard *.js"
+    "test": "tap test/*-test.js",
+    "coverage": "tap --coverage-report=html test/*-test.js",
+    "lint": "npx standard *.js test/*.js"
   },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
     "@ipld/block": "~2.0.4",
     "cids": "~0.7.1",
-    "iamap": "~0.5.1",
+    "iamap": "~0.6.0",
     "murmurhash3js-revisited": "~3.0.0"
   },
   "devDependencies": {
     "datastore-zipcar": "~1.1.1",
+    "multihashing-async": "~0.7.0",
     "tap": "~14.6.1"
   },
   "repository": {

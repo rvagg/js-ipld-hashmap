@@ -83,7 +83,7 @@ HashMap.create = async function create (loader, root, options) {
   }
 
   if (options && typeof options !== 'object') {
-    throw new TypeError(`HashMap.create() the 'options' argument must be an object`)
+    throw new TypeError('HashMap.create() the \'options\' argument must be an object')
   }
 
   function fromOptions (name, type, def) {
@@ -102,9 +102,12 @@ HashMap.create = async function create (loader, root, options) {
   const store = {
     async load (cid) {
       const bytes = await loader.get(cid)
+      if (!bytes) {
+        return undefined
+      }
       const block = Block.create(bytes, cid)
       if (!(await block.validate())) {
-        throw new Error(`Loadded block for ${cid.toString()} did not validate bytes against CID`)
+        throw new Error(`Loaded block for ${cid.toString()} did not validate bytes against CID`)
       }
       return block.decode()
     },
@@ -129,7 +132,7 @@ HashMap.create = async function create (loader, root, options) {
   const hasher = fromOptions('hasher', 'function', DEFAULT_HASHER)
   const hashBytes = fromOptions('hashBytes', 'number', DEFAULT_HASH_BYTES)
   if (hashAlg !== DEFAULT_HASH_ALGORITHM && (typeof options.hasher !== 'function' || options.hashBytes !== 'number')) {
-    throw new TypeError(`HashMap.create() requires a 'hasher' function and a 'hashBytes' integer to use a custom 'hashAlg'`)
+    throw new TypeError('HashMap.create() requires a \'hasher\' function and a \'hashBytes\' integer to use a custom \'hashAlg\'')
   }
   IAMap.registerHasher(hashAlg, hashBytes, hasher)
 
