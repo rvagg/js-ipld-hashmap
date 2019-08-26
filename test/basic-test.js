@@ -10,9 +10,7 @@ async function toArray (asyncIterator) {
 }
 
 tap.test('Basic usage', async (t) => {
-  const expectedEntries = 'foo:bar bar:baz baz:boom'.split(' ')
-    .map((e) => e.split(':'))
-    .map((ea) => ({ key: ea[0], value: ea[1] }))
+  const expectedEntries = 'foo:bar bar:baz baz:boom'.split(' ').map((e) => e.split(':'))
 
   const store = {
     map: new Map(),
@@ -27,7 +25,9 @@ tap.test('Basic usage', async (t) => {
 
   await verify(map) // validate the map we just put things into
 
-  const map2 = await HashMap.create(store, map.id)
+  const map2 = await HashMap.create(store, map.cid)
+
+  t.strictEqual(map2.cid, map.cid, 'CIDs match')
 
   await verify(map2) // validate a map we've loaded from the backing store
 
@@ -36,7 +36,7 @@ tap.test('Basic usage', async (t) => {
 
   await verify(map2)
 
-  const map3 = await HashMap.create(store, map2.id)
+  const map3 = await HashMap.create(store, map2.cid)
 
   await verify(map3)
 
@@ -45,12 +45,12 @@ tap.test('Basic usage', async (t) => {
     t.match(entries, expectedEntries, 'entries() returns expected list')
 
     const keys = await toArray(map.keys())
-    t.match(keys, expectedEntries.map((e) => { return e.key }), 'keys() returns expected list')
+    t.match(keys, expectedEntries.map((e) => e[0]), 'keys() returns expected list')
 
     const values = await toArray(map.values())
-    t.match(values, expectedEntries.map((e) => { return e.value }), 'values() returns expected list')
+    t.match(values, expectedEntries.map((e) => e[1]), 'values() returns expected list')
 
-    for (const { key, value } of expectedEntries) {
+    for (const [key, value] of expectedEntries) {
       t.ok(await map.has(key))
       t.strictEqual(await map.get(key, value), value, `get(${key})`)
     }

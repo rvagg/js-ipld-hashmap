@@ -1,7 +1,6 @@
 const fs = require('fs').promises
 const HashMap = require('../')
 const tap = require('tap')
-const CID = require('cids')
 
 tap.test('Tokenized file test', async (t) => {
   // index the words found in ipld-hashmap.js, storing an array of each instance's location
@@ -39,19 +38,29 @@ tap.test('Tokenized file test', async (t) => {
     line++
   }
 
-  const actualMap = await HashMap.create(store, map.id)
+  const actualMap = await HashMap.create(store, map.cid)
 
-  //t.strictEqual(await actualMap.size(), expectedMap.size)
+  t.strictEqual(actualMap.cid, map.cid, 'CIDs match')
+
+  t.strictEqual(await actualMap.size(), expectedMap.size)
   for (const [key, value] of expectedMap.entries()) {
     t.strictDeepEqual(value, await actualMap.get(key))
   }
+
+  let cidCount = 0
+  let root
+  for await (const cid of actualMap.cids()) {
+    if (!root) {
+      root = cid
+    }
+    cidCount++
+  }
+  t.ok(cidCount >= 20, 'has at least 20 CIDs making up the collection')
+  t.strictEqual(actualMap.cid, root, 'first CID emitted is the root')
 
   // delete one and test that deletion sticks
   await actualMap.delete('exports')
   t.strictEqual(await actualMap.has('exports'), false, `doesn't have what we deleted`)
   t.strictEqual(await actualMap.get('exports'), undefined, `doesn't have what we deleted`)
-
-  //for await (const id of map.ids()) {
-   // console.log('cid', id.toString())
- // }
+  t.notEqual(actualMap.cid, map.cid, 'CIDs no longer match')
 })
