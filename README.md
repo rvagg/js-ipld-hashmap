@@ -39,7 +39,7 @@ An IPLD HashMap object. Create a new HashMap or load an existing one with the as
 This class serves mostly as a IPLD usability wrapper for
 [IAMap](https://github.com/rvagg/iamap) which implements the majority of the logic behind the
 IPLD HashMap specification, without being IPLD-specific. IAMap is immutable, in that each
-mutation (delete or set) returns a new IAMap instance. `HashMap`, however, is immutable, and
+mutation (delete or set) returns a new IAMap instance. `HashMap`, however, is mutable, and
 mutation operations may be performed on the same object but its `cid` property will change
 with mutations.
 
