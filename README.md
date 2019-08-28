@@ -2,6 +2,8 @@
 
 **An associative array Map-type data structure for very large, distributed data sets built on [IPLD](http://ipld.io/).**
 
+[![NPM](https://nodei.co/npm/ipld-hashmap.svg)](https://nodei.co/npm/ipld-hashmap/)
+
 This JavaScript implementation conforms to the [IPLD HashMap specification](https://github.com/ipld/specs/blob/master/schema-layer/data-structures/hashmap.md).
 
 The `HashMap` in this implementation has an API similar to JavaScript's native [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object but uses asynchronous accessors rather than synchronous. When creating a new `HashMap` or loading one with existing data, a backing store must be provided. The backing store is provided via a `loader` interface which should have a `get()` method that returns binary IPLD block data when provided a [CID](https://github.com/multiformats/js-cid) (content identifier) and a `put()` method that takes both a CID and binary block data that will store the IPLD block. This interface may connect to a P2P network, a block storage database or even a [ZIP file](https://github.com/rvagg/js-ds-zipcar).
