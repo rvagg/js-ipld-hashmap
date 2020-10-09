@@ -1,10 +1,8 @@
 const IAMap = require('iamap')
-const CID = require('cids')
-const Block = require('@ipld/block')
+const { CID } = require('multiformats')
+const Block = require('multiformats/block')
 const murmurhash3 = require('murmurhash3js-revisited')
 
-const DEFAULT_BLOCK_CODEC = 'dag-cbor'
-const DEFAULT_BLOCK_ALGORITHM = 'sha2-256'
 const DEFAULT_HASH_ALGORITHM = 'murmur3-32'
 const DEFAULT_HASHER = murmur332Hasher
 const DEFAULT_HASH_BYTES = 32
@@ -33,7 +31,7 @@ const DEFAULT_BUCKET_SIZE = 3
  * key/value pair (because it doesn't already exist in this HashMap), the `cid` will not change.
  */
 
-function HashMap (iamap) {
+function HashMap (iamap, codec, hasher) {
   /* These are defined by IAMap:
     async set (key, value) { }
     async get (key) { }
@@ -264,12 +262,7 @@ function HashMap (iamap) {
  * @return {HashMap} - A HashMap instance, either loaded from an existing root block CID, or a new,
  * empty HashMap if no CID is provided.
  */
-HashMap.create = async function create (loader, root, options) {
-  if (!CID.isCID(root)) {
-    options = root
-    root = null
-  }
-
+HashMap.create = async function create ({loader, root, options}) {
   if (!loader || typeof loader.get !== 'function' || typeof loader.put !== 'function') {
     throw new TypeError('HashMap.create() requires a loader object with get() and put() methods')
   }
@@ -277,6 +270,11 @@ HashMap.create = async function create (loader, root, options) {
   if (options && typeof options !== 'object') {
     throw new TypeError('HashMap.create() the \'options\' argument must be an object')
   }
+
+  console.log({loader, root, options})
+  const { codec, hasher } = options
+  if (!codec) throw new Error('Missing required option "codec"')
+  if (!hasher) throw new Error('Missing required option "codec"')
 
   function fromOptions (name, type, def) {
     if (!options || options[name] === undefined) {
@@ -288,26 +286,19 @@ HashMap.create = async function create (loader, root, options) {
     return options[name]
   }
 
-  const codec = fromOptions('blockCodec', 'string', DEFAULT_BLOCK_CODEC)
-  const algorithm = fromOptions('blockAlg', 'string', DEFAULT_BLOCK_ALGORITHM)
-
   const store = {
     async load (cid) {
       const bytes = await loader.get(cid)
       if (!bytes) {
         return undefined
       }
-      const block = Block.create(bytes, cid)
-      if (!(await block.validate())) {
-        throw new Error(`Loaded block for ${cid.toString()} did not validate bytes against CID`)
-      }
-      return block.decode()
+      const block = await Block.create({bytes, cid, codec, hasher})
+      return block.value
     },
 
-    async save (obj) {
-      const block = Block.encoder(obj, codec, algorithm)
-      const cid = await block.cid()
-      await loader.put(cid, await block.encode())
+    async save (value) {
+      const { cid, bytes } = await Block.encode({ value, codec, hasher})
+      await loader.put(cid, bytes)
       return cid
     },
 
@@ -316,25 +307,25 @@ HashMap.create = async function create (loader, root, options) {
     },
 
     isLink (obj) {
-      return CID.isCID(obj)
+      return obj.asCID === obj
     }
   }
 
-  const hashAlg = fromOptions('hashAlg', 'string', DEFAULT_HASH_ALGORITHM)
-  const hasher = fromOptions('hasher', 'function', DEFAULT_HASHER)
+  const hamtAlg = fromOptions('hamtAlg', 'string', DEFAULT_HASH_ALGORITHM)
+  const hamtHasher = fromOptions('hamtHasher', 'function', DEFAULT_HASHER)
   const hashBytes = fromOptions('hashBytes', 'number', DEFAULT_HASH_BYTES)
-  if (hashAlg !== DEFAULT_HASH_ALGORITHM && (typeof options.hasher !== 'function' || options.hashBytes !== 'number')) {
-    throw new TypeError('HashMap.create() requires a \'hasher\' function and a \'hashBytes\' integer to use a custom \'hashAlg\'')
+  if (hashAlg !== DEFAULT_HASH_ALGORITHM && (typeof options.hamtHasher !== 'function' || options.hashBytes !== 'number')) {
+    throw new TypeError('HashMap.create() requires a \'hamtHasher\' function and a \'hashBytes\' integer to use a custom \'hamtAlg\'')
   }
-  IAMap.registerHasher(hashAlg, hashBytes, hasher)
+  IAMap.registerHasher(hamtAlg, hashBytes, hamtHasher)
 
   const bitWidth = fromOptions('bitWidth', 'number', DEFAULT_BITWIDTH)
   const bucketSize = fromOptions('bucketSize', 'number', DEFAULT_BUCKET_SIZE)
 
-  const iamapOptions = { hashAlg, bitWidth, bucketSize }
+  const iamapOptions = { hamtAlg, bitWidth, bucketSize }
 
   let iamap
-  if (CID.isCID(root)) {
+  if (root.asCID === root) {
     // load existing, ignoring bitWidth & bucketSize, they are loaded from the existing root
     iamap = await IAMap.load(store, root)
   } else {

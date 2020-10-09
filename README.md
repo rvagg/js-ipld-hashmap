@@ -190,11 +190,11 @@ provided raw bytes of a block (`block`) and store it with the associated CID.
   * **`options.blockCodec`** _(`string`, optional, default=`'dag-json'`)_: The IPLD codec used to encode the blocks.
   * **`options.blockAlg`** _(`string`, optional, default=`'sha2-256'`)_: The hash algorithm to use when creating CIDs for
     the blocks.
-  * **`options.hashAlg`** _(`string`, optional, default=`'murmur3-32'`)_: The hash algorithm used for indexing this
+  * **`options.hamtAlg`** _(`string`, optional, default=`'murmur3-32'`)_: The hash algorithm used for indexing this
     HashMap. `'murmur3-32'` is the x86 32-bit Murmur3 hash algorithm, used by default. If you want
     to change this default, you need to provide a new algorithm. For custom hash algorithms,
-    `hashAlg`, `hasher` and `hashBytes` must be provided together.
-  * **`options.hasher`** _(`function`, optional, default=`murmur3.x86`)_: A function that takes a byte array
+    `hamtAlg`, `hamtHasher` and `hashBytes` must be provided together.
+  * **`options.hamtHasher`** _(`function`, optional, default=`murmur3.x86`)_: A function that takes a byte array
     (`Uint8Array`) and should return a byte representing a hash of the input. Supply this option if
     you wish to override the default `'murmur3-32'` hasher.
   * **`options.hashBytes`** _(`number`, optional, default=`32`)_: The number of bytes to expect from `hasher` function.
