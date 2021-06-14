@@ -1,0 +1,24 @@
+# Root node layout
+type HashMapRoot struct {
+  hashAlg Int
+  bucketSize Int
+  hamt HashMapNode
+}
+
+# Non-root node layout
+type HashMapNode struct {
+  map Bytes
+  data [ Element ]
+} representation tuple
+
+type Element union {
+  | &HashMapNode link
+  | Bucket list
+} representation kinded
+
+type Bucket [ BucketEntry ]
+
+type BucketEntry struct {
+  key Bytes
+  value Any
+} representation tuple
