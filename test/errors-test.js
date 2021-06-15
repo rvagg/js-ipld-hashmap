@@ -1,40 +1,48 @@
-const crypto = require('crypto')
+/* eslint-env mocha */
+
+const { CID } = require('multiformats/cid')
+const { sha256: blockHasher } = require('multiformats/hashes/sha2')
+const blockCodec = require('@ipld/dag-cbor')
 const HashMap = require('../')
-const tap = require('tap')
-const CID = require('cids')
-const multihashing = require('multihashing-async')
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 
-tap.test('create() errors', async (t) => {
-  const dummyLoader = { get () {}, put () {} }
-  t.rejects(HashMap.create(), 'empty create(), no loader')
-  t.rejects(HashMap.create({}), 'create() with useless loader')
-  t.rejects(HashMap.create({ get: () => {} }), 'create() with only get()')
-  t.rejects(HashMap.create(dummyLoader, 100), 'create() with bad options object')
-  t.rejects(HashMap.create(dummyLoader, { hashAlg: 'woop' }), 'create() hashAlg but no hasher or hashBytes')
-  t.rejects(HashMap.create(dummyLoader, { hashAlg: 'woop', hasher () {} }), 'create() hashAlg and hasher but no hashBytes')
-  t.rejects(HashMap.create(dummyLoader, { blockCodec: false }), 'create() bad coded type')
-})
+chai.use(chaiAsPromised)
+const { assert } = chai
 
-tap.test('CID load mismatch', async (t) => {
-  const store = {
-    get () {
-      return crypto.randomBytes(256)
-    },
-    put () { }
-  }
+describe('Errors', () => {
+  it('create() errors', async () => {
+    const dummyLoader = { get () {}, put () {} }
+    await assert.isRejected(HashMap.create(), 'requires a loader object')
+    await assert.isRejected(HashMap.create({}), 'requires a loader object')
+    await assert.isRejected(HashMap.create({ get: () => {} }), 'requires a loader object')
+    await assert.isRejected(HashMap.create(dummyLoader, 100), '\'options\' argument must be an object')
+    await assert.isRejected(HashMap.create(dummyLoader, { hashAlg: 'woop' }), 'requires a \'blockCodec\' option')
+    await assert.isRejected(HashMap.create(dummyLoader, { hashAlg: 'woop', blockCodec: {} }), 'requires a \'blockHasher\' option')
+    await assert.isRejected(HashMap.create(dummyLoader, { blockCodec: false }), 'requires the \'blockCodec\' option to be a object')
+  })
 
-  const hash = await multihashing('blorp', 'sha2-256')
-  const cid = new CID(1, 'dag-cbor', hash) // just a random CID
-  t.rejects(HashMap.create(store, cid), 'bad loader rejects')
-})
+  it('CID load mismatch', async () => {
+    const store = {
+      get () {
+        return Uint8Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) // "random" bytes
+      },
+      put () { }
+    }
 
-tap.test('non-storing store', async (t) => {
-  const store = {
-    get () { },
-    put () { }
-  }
+    const hash = await blockHasher.digest(new TextEncoder().encode('blorp'))
+    const cid = CID.create(1, blockCodec.code, hash) // just a random CID
+    await assert.isRejected(HashMap.create(store, cid, { blockCodec, blockHasher }), 'decode error')
+  })
 
-  const hash = await multihashing('blorp', 'sha2-256')
-  const cid = new CID(1, 'dag-cbor', hash) // just a random CID
-  t.rejects(HashMap.create(store, cid), 'bad loader rejects')
+  it('non-storing store', async () => {
+    const store = {
+      get () { },
+      put () { }
+    }
+
+    const hash = await blockHasher.digest(new TextEncoder().encode('blorp'))
+    const cid = CID.create(1, blockCodec.code, hash) // just a random CID
+    await assert.isRejected(HashMap.create(store, cid, { blockCodec, blockHasher })) // , 'bad loader rejects')
+  })
 })

@@ -4,23 +4,30 @@
   "description": "A JavaScript implementation of the IPLD HashMap specification",
   "main": "ipld-hashmap.js",
   "scripts": {
-    "test": "tap test/*-test.js",
-    "coverage": "tap --coverage-report=html test/*-test.js",
-    "lint": "npx standard *.js test/*.js",
+    "test": "npm run lint && hundreds mocha test/*-test.js",
+    "lint": "standard",
     "docs": "jsdoc4readme --readme ipld-hashmap.js"
   },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@ipld/block": "~2.0.4",
-    "cids": "~0.7.1",
-    "iamap": "~0.6.0",
-    "murmurhash3js-revisited": "~3.0.0"
+    "iamap": "^1.0.0",
+    "multiformats": "^9.0.3"
   },
   "devDependencies": {
-    "jsdoc4readme": "~1.3.0",
-    "multihashing-async": "~0.7.0",
-    "tap": "~14.6.1"
+    "@ipld/dag-cbor": "^6.0.4",
+    "@types/chai": "^4.2.18",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "hundreds": "^0.0.9",
+    "ipjs": "^5.0.0",
+    "jsdoc4readme": "^1.4.0",
+    "mocha": "^9.0.0",
+    "polendina": "^1.1.0",
+    "standard": "^16.0.3",
+    "typescript": "^4.3.2"
   },
   "repository": {
     "type": "git",

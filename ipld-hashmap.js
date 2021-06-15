@@ -1,15 +1,14 @@
 const IAMap = require('iamap')
-const CID = require('cids')
-const Block = require('@ipld/block')
-const murmurhash3 = require('murmurhash3js-revisited')
+const { CID } = require('multiformats/cid')
+const Block = require('multiformats/block')
+const { sha256 } = require('multiformats/hashes/sha2')
 
-const DEFAULT_BLOCK_CODEC = 'dag-cbor'
-const DEFAULT_BLOCK_ALGORITHM = 'sha2-256'
-const DEFAULT_HASH_ALGORITHM = 'murmur3-32'
-const DEFAULT_HASHER = murmur332Hasher
+const DEFAULT_HASHER = sha256
 const DEFAULT_HASH_BYTES = 32
 const DEFAULT_BITWIDTH = 8
 const DEFAULT_BUCKET_SIZE = 3
+
+const textDecoder = new TextDecoder()
 
 /**
  * @classdesc
@@ -178,7 +177,7 @@ function HashMap (iamap) {
   this.keys = async function * () {
     for await (const key of iamap.keys()) {
       // IAMap keys are Buffers, make them strings
-      yield key.toString('utf8')
+      yield textDecoder.decode(key)
     }
   }
 
@@ -200,7 +199,7 @@ function HashMap (iamap) {
   this.entries = async function * () {
     for await (const entry of iamap.entries()) {
       // IAMap keys are Buffers, make them strings and return a tuple, like Map#entries
-      yield [entry.key.toString('utf8'), entry.value]
+      yield [textDecoder.decode(entry.key), entry.value]
     }
   }
 
@@ -265,9 +264,12 @@ function HashMap (iamap) {
  * empty HashMap if no CID is provided.
  */
 HashMap.create = async function create (loader, root, options) {
-  if (!CID.isCID(root)) {
+  const cid = CID.asCID(root)
+  if (!cid) {
     options = root
     root = null
+  } else {
+    root = cid
   }
 
   if (!loader || typeof loader.get !== 'function' || typeof loader.put !== 'function') {
@@ -280,35 +282,35 @@ HashMap.create = async function create (loader, root, options) {
 
   function fromOptions (name, type, def) {
     if (!options || options[name] === undefined) {
+      if (def === undefined) {
+        throw new TypeError(`HashMap.create() requires a '${name}' option`)
+      }
       return def
     }
-    if (typeof options[name] !== type) { // eslint-disable-line
-      throw new TypeError(`HashMap.create() requires '${name}' to be a ${type}`)
+    if (type !== undefined && typeof options[name] !== type) { // eslint-disable-line
+      throw new TypeError(`HashMap.create() requires the '${name}' option to be a ${type}`)
     }
     return options[name]
   }
 
-  const codec = fromOptions('blockCodec', 'string', DEFAULT_BLOCK_CODEC)
-  const algorithm = fromOptions('blockAlg', 'string', DEFAULT_BLOCK_ALGORITHM)
+  const codec = fromOptions('blockCodec', 'object')
+  const hasher = fromOptions('blockHasher', 'object')
 
   const store = {
     async load (cid) {
       const bytes = await loader.get(cid)
       if (!bytes) {
-        return undefined
+        throw new Error(`Could not load block for: ${cid}`)
       }
-      const block = Block.create(bytes, cid)
-      if (!(await block.validate())) {
-        throw new Error(`Loaded block for ${cid.toString()} did not validate bytes against CID`)
-      }
-      return block.decode()
+      // create() validates the block for us
+      const block = await Block.create({ bytes, cid, hasher, codec })
+      return block.value
     },
 
-    async save (obj) {
-      const block = Block.encoder(obj, codec, algorithm)
-      const cid = await block.cid()
-      await loader.put(cid, await block.encode())
-      return cid
+    async save (value) {
+      const block = await Block.encode({ value, codec, hasher })
+      await loader.put(block.cid, block.bytes)
+      return block.cid
     },
 
     isEqual (cid1, cid2) {
@@ -316,25 +318,25 @@ HashMap.create = async function create (loader, root, options) {
     },
 
     isLink (obj) {
-      return CID.isCID(obj)
+      return CID.asCID(obj) != null
     }
   }
 
-  const hashAlg = fromOptions('hashAlg', 'string', DEFAULT_HASH_ALGORITHM)
-  const hasher = fromOptions('hasher', 'function', DEFAULT_HASHER)
+  const hamtHasher = fromOptions('hasher', 'object', DEFAULT_HASHER)
   const hashBytes = fromOptions('hashBytes', 'number', DEFAULT_HASH_BYTES)
-  if (hashAlg !== DEFAULT_HASH_ALGORITHM && (typeof options.hasher !== 'function' || options.hashBytes !== 'number')) {
-    throw new TypeError('HashMap.create() requires a \'hasher\' function and a \'hashBytes\' integer to use a custom \'hashAlg\'')
+  const hashFn = async (bytes) => {
+    const hash = await sha256.digest(bytes)
+    return hash.digest
   }
-  IAMap.registerHasher(hashAlg, hashBytes, hasher)
+  IAMap.registerHasher(hamtHasher.code, hashBytes, hashFn)
 
   const bitWidth = fromOptions('bitWidth', 'number', DEFAULT_BITWIDTH)
   const bucketSize = fromOptions('bucketSize', 'number', DEFAULT_BUCKET_SIZE)
 
-  const iamapOptions = { hashAlg, bitWidth, bucketSize }
+  const iamapOptions = { hashAlg: hamtHasher.code, bitWidth, bucketSize }
 
   let iamap
-  if (CID.isCID(root)) {
+  if (root) {
     // load existing, ignoring bitWidth & bucketSize, they are loaded from the existing root
     iamap = await IAMap.load(store, root)
   } else {
@@ -343,13 +345,6 @@ HashMap.create = async function create (loader, root, options) {
   }
 
   return new HashMap(iamap)
-}
-
-function murmur332Hasher (key) {
-  // key is a `Buffer`
-  const b = Buffer.alloc(4)
-  b.writeUInt32LE(murmurhash3.x86.hash32(key))
-  return b
 }
 
 module.exports.create = HashMap.create
