@@ -1,11 +1,11 @@
 /* eslint-env mocha */
 
-const { CID } = require('multiformats/cid')
-const { sha256: blockHasher } = require('multiformats/hashes/sha2')
-const blockCodec = require('@ipld/dag-cbor')
-const HashMap = require('../')
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+import { create as createHashMap, load as loadHashMap } from '../ipld-hashmap.js'
+import { CID } from 'multiformats/cid'
+import { sha256 as blockHasher } from 'multiformats/hashes/sha2'
+import * as blockCodec from '@ipld/dag-cbor'
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 
 chai.use(chaiAsPromised)
 const { assert } = chai
@@ -13,13 +13,22 @@ const { assert } = chai
 describe('Errors', () => {
   it('create() errors', async () => {
     const dummyLoader = { get () {}, put () {} }
-    await assert.isRejected(HashMap.create(), 'requires a loader object')
-    await assert.isRejected(HashMap.create({}), 'requires a loader object')
-    await assert.isRejected(HashMap.create({ get: () => {} }), 'requires a loader object')
-    await assert.isRejected(HashMap.create(dummyLoader, 100), '\'options\' argument must be an object')
-    await assert.isRejected(HashMap.create(dummyLoader, { hashAlg: 'woop' }), 'requires a \'blockCodec\' option')
-    await assert.isRejected(HashMap.create(dummyLoader, { hashAlg: 'woop', blockCodec: {} }), 'requires a \'blockHasher\' option')
-    await assert.isRejected(HashMap.create(dummyLoader, { blockCodec: false }), 'requires the \'blockCodec\' option to be a object')
+    await assert.isRejected(createHashMap(), '\'loader\' object with get() and put() methods is required')
+    await assert.isRejected(createHashMap({}), '\'loader\' object with get() and put() methods is required')
+    await assert.isRejected(createHashMap({ get: () => {} }), '\'loader\' object with get() and put() methods is required')
+    await assert.isRejected(createHashMap(dummyLoader, 100), '\'options\' argument is required')
+    await assert.isRejected(createHashMap(dummyLoader, { }), '\'blockCodec\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec: {} }), '\'blockCodec\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec: false }), '\'blockCodec\' option')
+    const blockCodec = { code: 1, encode: () => {}, decode: () => {} }
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec }), '\'blockHasher\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher: false }), '\'blockHasher\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher: {} }), '\'blockHasher\' option')
+    const blockHasher = { code: 2, digest: () => {} }
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, hasher: false }), '\'hasher\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, hasher: {} }), '\'hasher\' option')
+    const hasher = blockHasher
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, hasher, hashBytes: false }), '\'hashBytes\' option')
   })
 
   it('CID load mismatch', async () => {
@@ -32,7 +41,7 @@ describe('Errors', () => {
 
     const hash = await blockHasher.digest(new TextEncoder().encode('blorp'))
     const cid = CID.create(1, blockCodec.code, hash) // just a random CID
-    await assert.isRejected(HashMap.create(store, cid, { blockCodec, blockHasher }), 'decode error')
+    await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher }), 'decode error')
   })
 
   it('non-storing store', async () => {
@@ -43,6 +52,6 @@ describe('Errors', () => {
 
     const hash = await blockHasher.digest(new TextEncoder().encode('blorp'))
     const cid = CID.create(1, blockCodec.code, hash) // just a random CID
-    await assert.isRejected(HashMap.create(store, cid, { blockCodec, blockHasher })) // , 'bad loader rejects')
+    await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher })) // , 'bad loader rejects')
   })
 })

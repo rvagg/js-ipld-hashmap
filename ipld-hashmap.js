@@ -1,14 +1,41 @@
-const IAMap = require('iamap')
-const { CID } = require('multiformats/cid')
-const Block = require('multiformats/block')
-const { sha256 } = require('multiformats/hashes/sha2')
+import { create as createIAMap, load as loadIAMap, registerHasher } from 'iamap'
+import { CID } from 'multiformats/cid'
+import * as Block from 'multiformats/block'
+import { sha256 } from 'multiformats/hashes/sha2'
 
 const DEFAULT_HASHER = sha256
 const DEFAULT_HASH_BYTES = 32
-const DEFAULT_BITWIDTH = 8
+// 5/3 seems to offer best perf characteristics in terms of raw speed
+// (Filecoin found this too for their HAMT usage)
+// but amount and size of garbage will change with different parameters
+const DEFAULT_BITWIDTH = 5
 const DEFAULT_BUCKET_SIZE = 3
 
 const textDecoder = new TextDecoder()
+
+/**
+ * @template V
+ * @typedef {import('iamap').IAMap<V>} IAMap<V>
+ */
+/**
+ * @template V
+ * @typedef {import('iamap').Store<V>} Store<V>
+ */
+/**
+ * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
+ */
+/**
+ * @template V
+ * @typedef {import('./interface').HashMap<V>} HashMap<V>
+ */
+/**
+ * @template {number} Codec
+ * @template V
+ * @typedef {import('./interface').CreateOptions<Codec,V>} CreateOptions<Codec,V>
+ */
+/**
+ * @typedef {import('./interface').Loader} Loader<V>
+ */
 
 /**
  * @classdesc
@@ -23,6 +50,8 @@ const textDecoder = new TextDecoder()
  * with mutations.
  *
  * @name HashMap
+ * @template V
+ * @implements {HashMap<V>}
  * @class
  * @hideconstructor
  * @property {CID} cid - The _current_ CID of this HashMap. It is important to note that this CID
@@ -31,23 +60,16 @@ const textDecoder = new TextDecoder()
  * a key already exists with that value) or {@link HashMap#delete} does not delete an existing
  * key/value pair (because it doesn't already exist in this HashMap), the `cid` will not change.
  */
-
-function HashMap (iamap) {
-  /* These are defined by IAMap:
-    async set (key, value) { }
-    async get (key) { }
-    async has (key) { }
-    async delete (key) { }
-    async size () { }
-    async * keys () { }
-    async * values () { }
-    async * entries () { }
-    async * ids () { }
-
-    And IAMap is immutable, so mutation operations return a new instance so
-    we use `iamap` as the _current_ instance and wrap around that,
-    switching it out as we mutate
-  */
+class HashMapImpl {
+  /**
+   * @param {IAMap<V>} iamap
+   */
+  constructor (iamap) {
+    // IAMap is immutable, so mutation operations return a new instance so
+    // we use `this._iamap` as the _current_ instance and wrap around that,
+    // switching it out as we mutate
+    this._iamap = iamap
+  }
 
   /**
    * @name HashMap#get
@@ -56,13 +78,16 @@ function HashMap (iamap) {
    * @function
    * @async
    * @memberof HashMap
-   * @param {String} key - The key of the key/value pair entry to look up in this HashMap.
-   * @return {*|CID|undefined}
+   * @param {string} key - The key of the key/value pair entry to look up in this HashMap.
+   * @return {Promise<V|undefined>}
    * The value stored for the given `key` which may be any type serializable by IPLD, or a CID to
    * an existing IPLD object. This should match what was provided by {@link HashMap#set} as the
    * `value` for this `key`. If the `key` is not stored in this HashMap, `undefined` will be
    * returned.
    */
+  async get (key) {
+    return this._iamap.get(key)
+  }
 
   /**
    * @name HashMap#has
@@ -72,10 +97,13 @@ function HashMap (iamap) {
    * @function
    * @async
    * @memberof HashMap
-   * @param {String} key - The key of the key/value pair entry to look up in this HashMap.
-   * @return {boolean}
+   * @param {string} key - The key of the key/value pair entry to look up in this HashMap.
+   * @return {Promise<boolean>}
    * `true` if the `key` exists in this HashMap, `false` otherwise.
    */
+  async has (key) {
+    return this._iamap.has(key)
+  }
 
   /**
    * @name HashMap#size
@@ -84,16 +112,12 @@ function HashMap (iamap) {
    * @function
    * @async
    * @memberof HashMap
-   * @return {number}
+   * @return {Promise<number>}
    * An integer greater than or equal to zero indicating the number of key/value pairse stored
    * in this HashMap.
    */
-
-  // accessors
-  for (const fn of 'get has size'.split(' ')) {
-    this[fn] = async function () {
-      return iamap[fn].apply(iamap, arguments)
-    }
+  async size () {
+    return this._iamap.size()
   }
 
   /**
@@ -114,10 +138,14 @@ function HashMap (iamap) {
    * @function
    * @async
    * @memberof HashMap
-   * @param {String} key - The key of the new key/value pair entry to store in this HashMap.
-   * @param {*|CID} value - The value to store, either an object that can be serialized inline
+   * @param {string} key - The key of the new key/value pair entry to store in this HashMap.
+   * @param {V} value - The value to store, either an object that can be serialized inline
    * via IPLD or a CID pointing to another object.
+   * @returns {Promise<void>}
    */
+  async set (key, value) {
+    this._iamap = await this._iamap.set(key, value)
+  }
 
   /**
    * @name HashMap#delete
@@ -134,18 +162,12 @@ function HashMap (iamap) {
    * @function
    * @async
    * @memberof HashMap
-   * @param {String} key - The key of the key/value pair entry to remove from this HashMap.
+   * @param {string} key - The key of the key/value pair entry to remove from this HashMap.
+   * @returns {Promise<void>}
    */
-
-  // mutators
-  for (const fn of 'set delete'.split(' ')) {
-    this[fn] = async function () {
-      // iamap mutation operations return a new iamap, so update with that
-      iamap = await iamap[fn].apply(iamap, arguments)
-    }
+  async delete (key) {
+    this._iamap = await this._iamap.delete(key)
   }
-
-  // iterators
 
   /**
    * @name HashMap#values
@@ -155,12 +177,12 @@ function HashMap (iamap) {
    * from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator.<*|CID>}
+   * @returns {AsyncIterator<V>}
    * An async iterator that yields values of the type stored in this collection, either inlined
    * objects or CIDs.
    */
-  this.values = async function * () {
-    yield * iamap.values()
+  async * values () {
+    yield * this._iamap.values()
   }
 
   /**
@@ -171,11 +193,11 @@ function HashMap (iamap) {
    * from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator.<string>}
+   * @returns {AsyncIterator<string>}
    * An async iterator that yields string keys stored in this collection.
    */
-  this.keys = async function * () {
-    for await (const key of iamap.keys()) {
+  async * keys () {
+    for await (const key of this._iamap.keys()) {
       // IAMap keys are Buffers, make them strings
       yield textDecoder.decode(key)
     }
@@ -193,12 +215,12 @@ function HashMap (iamap) {
    * an array of key/value pairs where element `0` is the key and `1` is the value.
    * @function
    * @async
-   * @returns {AsyncIterator.<Object>}
+   * @returns {AsyncIterator<[string, V]>}
    * An async iterator that yields key/value pair tuples.
    */
-  this.entries = async function * () {
-    for await (const entry of iamap.entries()) {
-      // IAMap keys are Buffers, make them strings and return a tuple, like Map#entries
+  async * entries () {
+    for await (const entry of this._iamap.entries()) {
+      // IAMap keys are Buffers, make them strings
       yield [textDecoder.decode(entry.key), entry.value]
     }
   }
@@ -211,92 +233,129 @@ function HashMap (iamap) {
    * from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator.<CID>}
+   * @returns {AsyncIterator<CID>}
    * An async iterator that yields CIDs for the blocks that comprise this HashMap.
    */
-  this.cids = async function * () {
-    yield * iamap.ids()
+  async * cids () {
+    yield * this._iamap.ids()
   }
 
-  Object.defineProperty(this, 'cid', {
-    get () {
-      return iamap.id
-    }
-  })
+  get cid () {
+    return this._iamap.id
+  }
+
+  /**
+   * Create a new {@link HashMap} instance, beginning empty, or loading from existing data in a
+   * backing store.
+   *
+   * A backing store must be provided to make use of a HashMap, an interface to the store is given
+   * through the mandatory `loader` parameter. The backing store stores IPLD blocks, referenced by
+   * CIDs. `loader` must have two functions: `get(cid)` which should return the raw bytes (`Buffer`
+   * or `Uint8Array`) of a block matching the given CID, and `put(cid, block)` that will store the
+   * provided raw bytes of a block (`block`) and store it with the associated CID.
+   *
+   * @async
+   * @template V
+   * @template {number} Codec
+   * @param {Loader} loader - A loader with `get(cid):block` and `put(cid, block)` functions for
+   * loading an storing block data by CID.
+   * @param {CreateOptions<Codec, V>} options - Options for the HashMap. Defaults are provided but you can tweak
+   * behavior according to your needs with these options.
+   * @return {Promise<HashMap<V>>} - A HashMap instance, either loaded from an existing root block CID, or a new,
+   * empty HashMap if no CID is provided.
+   */
+  static async create (loader, options) {
+    return _load(loader, null, options)
+  }
+
+  /**
+   * @template V
+   * @template {number} Codec
+   * @param {Loader} loader
+   * @param {CID} root - A root of an existing HashMap. Provide a CID if you want to load existing
+   * data.
+   * @param {CreateOptions<Codec, V>} options
+   * @returns {Promise<HashMap<V>>}
+   */
+  static async load (loader, root, options) {
+    return _load(loader, root, options)
+  }
 }
 
 /**
- * Create a new {@link HashMap} instance, beginning empty, or loading from existing data in a
- * backing store.
- *
- * A backing store must be provided to make use of a HashMap, an interface to the store is given
- * through the mandatory `loader` parameter. The backing store stores IPLD blocks, referenced by
- * CIDs. `loader` must have two functions: `get(cid)` which should return the raw bytes (`Buffer`
- * or `Uint8Array`) of a block matching the given CID, and `put(cid, block)` that will store the
- * provided raw bytes of a block (`block`) and store it with the associated CID.
- *
- * @async
- * @param {Object} loader - A loader with `get(cid):block` and `put(cid, block)` functions for
- * loading an storing block data by CID.
- * @param {CID} [root] - A root of an existing HashMap. Provide a CID if you want to load existing
- * data, otherwise omit this option and a new, empty HashMap will be created.
- * @param {Object} [options] - Options for the HashMap. Defaults are provided but you can tweak
- * behavior according to your needs with these options.
- * @param {string} [options.blockCodec='dag-json'] - The IPLD codec used to encode the blocks.
- * @param {string} [options.blockAlg='sha2-256'] - The hash algorithm to use when creating CIDs for
- * the blocks.
- * @param {string} [options.hashAlg='murmur3-32'] - The hash algorithm used for indexing this
- * HashMap. `'murmur3-32'` is the x86 32-bit Murmur3 hash algorithm, used by default. If you want
- * to change this default, you need to provide a new algorithm. For custom hash algorithms,
- * `hashAlg`, `hasher` and `hashBytes` must be provided together.
- * @param {function} [options.hasher=murmur3.x86] - A function that takes a byte array
- * (`Uint8Array`) and should return a byte representing a hash of the input. Supply this option if
- * you wish to override the default `'murmur3-32'` hasher.
- * @param {number} [options.hashBytes=32] - The number of bytes to expect from `hasher` function.
- * Supply this option if you wish to override the default `'murmur3-32'` hasher.
- * @param {number} [options.bitWidth=8] - The number of bits to take from the hash of the key at
- * each level of the HashMap tree to form an index. Read more about this option in the
- * [IAMap documentation](https://github.com/rvagg/iamap#async-iamapcreatestore-options).
- * @param {number} [options.bucketSize=3] - The maximum number of elements to store at each leaf
- * of the HashMap tree structure before overflowing to a new node. Read more about this option in
- * the [IAMap documentation](https://github.com/rvagg/iamap#async-iamapcreatestore-options).
- * @return {HashMap} - A HashMap instance, either loaded from an existing root block CID, or a new,
- * empty HashMap if no CID is provided.
+ * @template V
+ * @template {number} Codec
+ * @param {Loader} loader
+ * @param {CID|null} root
+ * @param {CreateOptions<Codec, V>} options
+ * @returns {Promise<HashMap<V>>}
  */
-HashMap.create = async function create (loader, root, options) {
+export async function _load (loader, root, options) {
   const cid = CID.asCID(root)
-  if (!cid) {
-    options = root
-    root = null
-  } else {
-    root = cid
-  }
 
   if (!loader || typeof loader.get !== 'function' || typeof loader.put !== 'function') {
-    throw new TypeError('HashMap.create() requires a loader object with get() and put() methods')
+    throw new TypeError('\'loader\' object with get() and put() methods is required')
   }
 
-  if (options && typeof options !== 'object') {
-    throw new TypeError('HashMap.create() the \'options\' argument must be an object')
+  if (typeof options !== 'object') {
+    throw new TypeError('An \'options\' argument is required')
   }
 
-  function fromOptions (name, type, def) {
-    if (!options || options[name] === undefined) {
-      if (def === undefined) {
-        throw new TypeError(`HashMap.create() requires a '${name}' option`)
+  if (!('blockCodec' in options) ||
+      typeof options.blockCodec !== 'object' ||
+      typeof options.blockCodec.code !== 'number' ||
+      typeof options.blockCodec.encode !== 'function' ||
+      typeof options.blockCodec.decode !== 'function') {
+    throw new TypeError('A valid \'blockCodec\' option is required')
+  }
+  const codec = options.blockCodec
+  if (!('blockHasher' in options) ||
+      typeof options.blockHasher !== 'object' ||
+      typeof options.blockHasher.digest !== 'function' ||
+      typeof options.blockHasher.code !== 'number') {
+    throw new TypeError('A valid \'blockHasher\' option is required')
+  }
+  const hasher = options.blockHasher
+
+  /** @type {MultihashHasher} */
+  const hamtHasher = (() => {
+    if ('hasher' in options) {
+      if (typeof options.hasher !== 'object' ||
+          typeof options.hasher.digest !== 'function' ||
+          typeof options.hasher.code !== 'number') {
+        throw new TypeError('\'hasher\' option must be a Multihasher')
       }
-      return def
+      return options.hasher
     }
-    if (type !== undefined && typeof options[name] !== type) { // eslint-disable-line
-      throw new TypeError(`HashMap.create() requires the '${name}' option to be a ${type}`)
+    return DEFAULT_HASHER
+  })()
+  const hashBytes = (() => {
+    if ('hashBytes' in options) {
+      if (typeof options.hashBytes !== 'number') {
+        throw new TypeError('\'hashBytes\' option must be a number')
+      }
+      /* c8 ignore next 2 */
+      return options.hashBytes
     }
-    return options[name]
+    return DEFAULT_HASH_BYTES
+  })()
+  /** @param {Uint8Array} bytes  */
+  const hashFn = async (bytes) => {
+    const hash = await sha256.digest(bytes)
+    return hash.digest
   }
+  registerHasher(hamtHasher.code, hashBytes, hashFn)
 
-  const codec = fromOptions('blockCodec', 'object')
-  const hasher = fromOptions('blockHasher', 'object')
+  const bitWidth = DEFAULT_BITWIDTH // fromOptions('bitWidth', 'number', DEFAULT_BITWIDTH)
+  const bucketSize = DEFAULT_BUCKET_SIZE // fromOptions('bucketSize', 'number', DEFAULT_BUCKET_SIZE)
+
+  const iamapOptions = { hashAlg: hamtHasher.code, bitWidth, bucketSize }
 
   const store = {
+    /**
+     * @param {CID} cid
+     * @returns {Promise<V>}
+     */
     async load (cid) {
       const bytes = await loader.get(cid)
       if (!bytes) {
@@ -307,44 +366,45 @@ HashMap.create = async function create (loader, root, options) {
       return block.value
     },
 
+    /**
+     * @param {V} value
+     * @returns {Promise<CID>}
+     */
     async save (value) {
       const block = await Block.encode({ value, codec, hasher })
       await loader.put(block.cid, block.bytes)
       return block.cid
     },
 
+    /**
+     * @param {CID} cid1
+     * @param {CID} cid2
+     * @returns {boolean}
+     */
     isEqual (cid1, cid2) {
       return cid1.equals(cid2)
     },
 
+    /**
+     * @param {any} obj
+     * @returns {boolean}
+     */
     isLink (obj) {
       return CID.asCID(obj) != null
     }
   }
 
-  const hamtHasher = fromOptions('hasher', 'object', DEFAULT_HASHER)
-  const hashBytes = fromOptions('hashBytes', 'number', DEFAULT_HASH_BYTES)
-  const hashFn = async (bytes) => {
-    const hash = await sha256.digest(bytes)
-    return hash.digest
-  }
-  IAMap.registerHasher(hamtHasher.code, hashBytes, hashFn)
-
-  const bitWidth = fromOptions('bitWidth', 'number', DEFAULT_BITWIDTH)
-  const bucketSize = fromOptions('bucketSize', 'number', DEFAULT_BUCKET_SIZE)
-
-  const iamapOptions = { hashAlg: hamtHasher.code, bitWidth, bucketSize }
-
   let iamap
-  if (root) {
+  if (cid) {
     // load existing, ignoring bitWidth & bucketSize, they are loaded from the existing root
-    iamap = await IAMap.load(store, root)
+    iamap = await loadIAMap(store, cid)
   } else {
     // create new
-    iamap = await IAMap.create(store, iamapOptions)
+    iamap = await createIAMap(store, iamapOptions)
   }
 
-  return new HashMap(iamap)
+  return new HashMapImpl(iamap)
 }
 
-module.exports.create = HashMap.create
+export const create = HashMapImpl.create
+export const load = HashMapImpl.load
