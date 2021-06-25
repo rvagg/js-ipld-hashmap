@@ -1,9 +1,9 @@
 /* eslint-env mocha */
 
-const HashMap = require('../')
-const { sha256: blockHasher } = require('multiformats/hashes/sha2')
-const blockCodec = require('@ipld/dag-cbor')
-const { assert } = require('chai')
+import { create as createHashMap, load as loadHashMap } from '../ipld-hashmap.js'
+import { sha256 as blockHasher } from 'multiformats/hashes/sha2'
+import * as blockCodec from '@ipld/dag-cbor'
+import { assert } from 'chai'
 
 async function toArray (asyncIterator) {
   const result = []
@@ -23,14 +23,14 @@ describe('Basics', () => {
       put (k, v) { store.map.set(k.toString(), v) }
     }
 
-    const map = await HashMap.create(store, { blockHasher, blockCodec })
+    const map = await createHashMap(store, { blockHasher, blockCodec })
     await map.set('foo', 'bar')
     await map.set('bar', 'baz')
     await map.set('baz', 'boom')
 
     await verify(map) // validate the map we just put things into
 
-    const map2 = await HashMap.create(store, map.cid, { blockHasher, blockCodec })
+    const map2 = await loadHashMap(store, map.cid, { blockHasher, blockCodec })
 
     assert.strictEqual(map2.cid, map.cid, 'CIDs match')
 
@@ -41,7 +41,7 @@ describe('Basics', () => {
 
     await verify(map2)
 
-    const map3 = await HashMap.create(store, map2.cid, { blockHasher, blockCodec })
+    const map3 = await loadHashMap(store, map2.cid, { blockHasher, blockCodec })
 
     await verify(map3)
 
