@@ -361,8 +361,25 @@ export async function _load (loader, root, options) {
   }
   registerHasher(hamtHasher.code, hashBytes, hashFn)
 
-  const bitWidth = DEFAULT_BITWIDTH // fromOptions('bitWidth', 'number', DEFAULT_BITWIDTH)
-  const bucketSize = DEFAULT_BUCKET_SIZE // fromOptions('bucketSize', 'number', DEFAULT_BUCKET_SIZE)
+  const bitWidth = (() => {
+    if ('bitWidth' in options) {
+      if (typeof options.bitWidth !== 'number') {
+        throw new TypeError('\'bitWidth\' option must be a number')
+      }
+      return options.bitWidth
+    }
+    return DEFAULT_BITWIDTH
+  })()
+
+  const bucketSize = (() => {
+    if ('bucketSize' in options) {
+      if (typeof options.bucketSize !== 'number') {
+        throw new TypeError('\'bucketSize\' option must be a number')
+      }
+      return options.bucketSize
+    }
+    return DEFAULT_BUCKET_SIZE
+  })()
 
   const iamapOptions = { hashAlg: hamtHasher.code, bitWidth, bucketSize }
 

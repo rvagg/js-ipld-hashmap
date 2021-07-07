@@ -33,7 +33,7 @@ export interface CreateOptions<Codec extends number, V> {
 
   hashBytes: number
 
-  bitWitdh: number
+  bitWidth: number
 
   bucketSize: number
 }

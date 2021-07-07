@@ -18,7 +18,7 @@ export interface CreateOptions<Codec extends number, V> {
     blockHasher: MultihashHasher;
     hasher: MultihashHasher;
     hashBytes: number;
-    bitWitdh: number;
+    bitWidth: number;
     bucketSize: number;
 }
 export interface Loader {
