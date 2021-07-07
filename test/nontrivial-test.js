@@ -60,6 +60,11 @@ describe('Nontrivial', () => {
 
     assert.strictEqual(actualMap.cid, map.cid, 'CIDs match')
 
+    // alice-words HashMap fixture expects this root
+    assert.strictEqual(actualMap.cid.toString(),
+      'bafyreic672jz6huur4c2yekd3uycswe2xfqhjlmtmm5dorb6yoytgflova',
+      'CID matches spec fixture')
+
     assert.strictEqual(await actualMap.size(), expectedMap.size)
     for (const entry of expectedMap.entries()) {
       assert.deepStrictEqual([entry[0], await actualMap.get(entry[0])], entry)
