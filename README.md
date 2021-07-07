@@ -1,16 +1,78 @@
 # js-ipld-hashmap
 
 **An associative array Map-type data structure for very large, distributed data sets built on [IPLD](http://ipld.io/).**
-
 [![NPM](https://nodei.co/npm/ipld-hashmap.svg)](https://nodei.co/npm/ipld-hashmap/)
 
-This JavaScript implementation conforms to the [IPLD HashMap specification](https://github.com/ipld/specs/blob/master/schema-layer/data-structures/hashmap.md).
+This JavaScript implementation conforms to the [IPLD HashMap specification](https://github.com/ipld/specs/blob/master/schema-layer/data-structures/hashmap.md) which describes a HAMT algorithm for constructing an evenly distributed associative array of arbitrary size using content addressed blocks.
 
-The `HashMap` in this implementation has an API similar to JavaScript's native [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object but uses asynchronous accessors rather than synchronous. When creating a new `HashMap` or loading one with existing data, a backing store must be provided. The backing store is provided via a `loader` interface which should have a `get()` method that returns binary IPLD block data when provided a [CID](https://github.com/multiformats/js-cid) (content identifier) and a `put()` method that takes both a CID and binary block data that will store the IPLD block. This interface may connect to a P2P network, a block storage database or even a [ZIP file](https://github.com/rvagg/js-ds-zipcar).
+* [Example](#example)
+* [Description](#description)
+* [API](#api)
+* [License and Copyright](#license-and-copyright)
+
+## Example
+
+```js
+import fs from 'fs/promises'
+import { create, load } from 'ipld-hashmap'
+import { sha256 as blockHasher } from 'multiformats/hashes/sha2'
+import * as blockCodec from '@ipld/dag-cbor' // encode blocks using the DAG-CBOR format
+
+// A basic in-memory store for mapping CIDs to their encoded Uint8Array blocks
+const store = {
+  map: new Map(),
+  get (k) { return store.map.get(k.toString()) },
+  put (k, v) { store.map.set(k.toString(), v) }
+}
+
+// Create a new HashMap by reading the package.json in the current directory and
+// storing an entry for each top level and second level field.
+async function setup () {
+  const map = await create(store, { bitWidth: 4, bucketSize: 2, blockHasher, blockCodec })
+  const pkg = JSON.parse(await fs.readFile('./package.json'))
+  for (const [key, value] of Object.entries(pkg)) {
+    await map.set(key, value)
+    if (typeof value === 'object') {
+      for (const [key2, value2] of Object.entries(value)) {
+        await map.set(`${key} -> ${key2}`, value2)
+      }
+    }
+  }
+  // return the CID of the root of the HashMap
+  return map.cid
+}
+
+// given only the CID of the root of the HashMap, load it and print its contents
+async function dump (rootCid) {
+  const map = await load(store, rootCid, { blockHasher, blockCodec })
+  console.log('ENTRIES ===========================')
+  for await (const [key, value] of map.entries()) {
+    console.log(`[${key}]:`, value)
+  }
+  console.log('STATS =============================')
+  console.log('size:', await map.size())
+  console.log('blocks:')
+  for await (const cid of map.cids()) {
+    console.log('\t', cid, cid.equals(map.cid) ? '(ROOT)' : '')
+    // console.dir(blockCodec.decode(store.get(cid)), { depth: Infinity })
+  }
+}
+
+setup()
+  .then((root) => dump(root))
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+```
+
+## Description
+
+The `HashMap` in this implementation has an API similar to JavaScript's native [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object but uses asynchronous accessors rather than synchronous. When creating a new `HashMap` or loading one with existing data, a backing store must be provided. The backing store is provided via a `loader` interface which should have a `get()` method that returns binary IPLD block data when provided a [CID](https://github.com/multiformats/js-multiformats) (content identifier) and a `put()` method that takes both a CID and binary block data that will store the IPLD block. This interface may connect to a P2P network, or a block storage system that can load and save keyed by CID.
 
 The algorithm for this HashMap is implemented in [IAMap](https://github.com/rvagg/iamap), you can read more about it there, or in the [IPLD HashMap specification](https://github.com/ipld/specs/blob/master/schema-layer/data-structures/hashmap.md). IAMap is serialization and storage agnostic and therefore does not contain any IPLD dependencies. IAMap is also immutable, where each mutation operation returns a _new_ instance.
 
-This implementation wraps IAMap with IPLD primitives, including the use of CIDs and the standard [IPLD block encoding](https://github.com/ipld/js-block) formats and presents a mutable interface. Each `HashMap` object has its own root CID in the `cid` property. Whenever the `HashMap` is mutated (`get()` and `delete()`), the `cid` property will change to the new root block CID.
+This implementation wraps IAMap with IPLD primitives, including the use of CIDs and the standard [IPLD block encoding](https://github.com/multiformats/js-multiformats) formats and presents a mutable interface. Each `HashMap` object has its own root CID in the `cid` property. Whenever the `HashMap` is mutated (`get()` and `delete()`), the `cid` property will change to the new root block CID.
 
 You can create a new, empty, `HashMap` with [`async HashMap.create(loader[, options])`](#HashMap__create). Loading a `HashMap` from existing data can be done with [`async HashMap.create(loader[, root][, options])`](#HashMap__create).
 
