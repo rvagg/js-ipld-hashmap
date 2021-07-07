@@ -29,6 +29,8 @@ describe('Errors', () => {
     await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, hasher: {} }), '\'hasher\' option')
     const hasher = blockHasher
     await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, hasher, hashBytes: false }), '\'hashBytes\' option')
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, bitWidth: 'nope' }))
+    await assert.isRejected(createHashMap(dummyLoader, { blockCodec, blockHasher, bucketSize: 'nope' }))
   })
 
   it('CID load mismatch', async () => {
