@@ -14,7 +14,7 @@
   "dependencies": {
     "@ipld/block": "~2.0.4",
     "cids": "~0.7.1",
-    "iamap": "~0.6.0",
+    "iamap": "~2.0.0",
     "murmurhash3js-revisited": "~3.0.0"
   },
   "devDependencies": {
