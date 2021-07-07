@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "standard",
-    "test:node": "c8 --check-coverage --branches 100 --functions 100 --lines 100 mocha test/*-test.js",
+    "test:node": "c8 --check-coverage --exclude schema-validate.js --exclude test/ --branches 100 --functions 100 --lines 100 mocha test/*-test.js",
     "test:browser": "polendina --page --worker --serviceworker --cleanup test/*-test.js",
     "test": "npm run lint && npm run build:types && npm run test:node && npm run test:browser",
     "coverage": "c8 --reporter=html mocha test/*-test.js && npx st -d coverage -p 8080",
@@ -18,6 +18,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "iamap": "^1.0.0",
+    "ipld-schema": "^1.1.1",
+    "ipld-schema-describer": "^1.0.2",
     "multiformats": "^9.1.0"
   },
   "devDependencies": {

@@ -28,9 +28,10 @@ Be aware that each mutation operation will create at least one new block, stored
  * [`async HashMap#delete(key)`](#HashMap_delete)
  * [`async HashMap#values()`](#HashMap_values)
  * [`async HashMap#keys()`](#HashMap_keys)
- * [`async HashMap#entries()`](#HashMap_entries)
+ * [`async * HashMapImpl#entries()`](#HashMapImpl_entries)
  * [`async HashMap#cids()`](#HashMap_cids)
- * [`async HashMap.create(loader[, root][, options])`](#HashMap__create)
+ * [`async HashMapImpl.create(loader, options)`](#HashMapImpl__create)
+ * [`async HashMapImpl.load(loader, root, options)`](#HashMapImpl__load)
 
 <a name="HashMap"></a>
 ### `class HashMap`
@@ -41,13 +42,16 @@ An IPLD HashMap object. Create a new HashMap or load an existing one with the as
 This class serves mostly as a IPLD usability wrapper for
 [IAMap](https://github.com/rvagg/iamap) which implements the majority of the logic behind the
 IPLD HashMap specification, without being IPLD-specific. IAMap is immutable, in that each
-mutation (delete or set) returns a new IAMap instance. `HashMap`, however, is mutable, and
+mutation (delete or set) returns a new IAMap instance. `HashMap`, however, is immutable, and
 mutation operations may be performed on the same object but its `cid` property will change
 with mutations.
 
-**Properties:**
+If consumed with TypeScript typings, `HashMap` is generic over value template type `V`, where various
+operations will accept or return template type `V`.
 
-* **`cid`** _(`CID`)_: The _current_ CID of this HashMap. It is important to note that this CID
+Properties:
+
+* `cid` `(CID)`: The _current_ CID of this HashMap. It is important to note that this CID
   will change when successfully performing mutation operations [`HashMap#set`](#HashMap_set) or
   [`HashMap#delete`](#HashMap_delete). Where a [`HashMap#set`](#HashMap_set) does not change an existing value (because
   a key already exists with that value) or [`HashMap#delete`](#HashMap_delete) does not delete an existing
@@ -56,39 +60,41 @@ with mutations.
 <a name="HashMap_get"></a>
 ### `async HashMap#get(key)`
 
+* `key` `(string)`: The key of the key/value pair entry to look up in this HashMap.
+
+* Returns:  `Promise<(V|undefined)>`: The value (of template type `V`) stored for the given `key` which may be any type serializable
+  by IPLD, or a CID to an existing IPLD object. This should match what was provided by
+  [`HashMap#set`](#HashMap_set) as the `value` for this `key`. If the `key` is not stored in this HashMap,
+  `undefined` will be returned.
+
 Fetches the value of the provided `key` stored in this HashMap, if it exists.
-
-**Parameters:**
-
-* **`key`** _(`String`)_: The key of the key/value pair entry to look up in this HashMap.
-
-**Return value**  _(`*|CID|undefined`)_: The value stored for the given `key` which may be any type serializable by IPLD, or a CID to
-  an existing IPLD object. This should match what was provided by [`HashMap#set`](#HashMap_set) as the
-  `value` for this `key`. If the `key` is not stored in this HashMap, `undefined` will be
-  returned.
 
 <a name="HashMap_has"></a>
 ### `async HashMap#has(key)`
 
+* `key` `(string)`: The key of the key/value pair entry to look up in this HashMap.
+
+* Returns:  `Promise<boolean>`: `true` if the `key` exists in this HashMap, `false` otherwise.
+
 Check whether the provided `key` exists in this HashMap. The equivalent of performing
 `map.get(key) !== undefined`.
-
-**Parameters:**
-
-* **`key`** _(`String`)_: The key of the key/value pair entry to look up in this HashMap.
-
-**Return value**  _(`boolean`)_: `true` if the `key` exists in this HashMap, `false` otherwise.
 
 <a name="HashMap_size"></a>
 ### `async HashMap#size()`
 
-Count the number of key/value pairs stored in this HashMap.
-
-**Return value**  _(`number`)_: An integer greater than or equal to zero indicating the number of key/value pairse stored
+* Returns:  `Promise<number>`: An integer greater than or equal to zero indicating the number of key/value pairse stored
   in this HashMap.
+
+Count the number of key/value pairs stored in this HashMap.
 
 <a name="HashMap_set"></a>
 ### `async HashMap#set(key, value)`
+
+* `key` `(string)`: The key of the new key/value pair entry to store in this HashMap.
+* `value` `(V)`: The value (of template type `V`) to store, either an object that can be
+  serialized inline via IPLD or a CID pointing to another object.
+
+* Returns:  `Promise<void>`
 
 Add a key/value pair to this HashMap. The value may be any object that can be serialized by
 IPLD, or a CID to a more complex (or larger) object. [`HashMap#get`](#HashMap_get) operations on the
@@ -103,14 +109,12 @@ As a mutation operation, performing a successful `set()` where a new key/value p
 different CID. This CID should be used to refer to this collection in the backing store where
 persistence is required.
 
-**Parameters:**
-
-* **`key`** _(`String`)_: The key of the new key/value pair entry to store in this HashMap.
-* **`value`** _(`*|CID`)_: The value to store, either an object that can be serialized inline
-  via IPLD or a CID pointing to another object.
-
 <a name="HashMap_delete"></a>
 ### `async HashMap#delete(key)`
+
+* `key` `(string)`: The key of the key/value pair entry to remove from this HashMap.
+
+* Returns:  `Promise<void>`
 
 Remove a key/value pair to this HashMap.
 
@@ -122,53 +126,47 @@ is removed from the collection, a new root node will be generated so `map.cid` w
 different CID. This CID should be used to refer to this collection in the backing store where
 persistence is required.
 
-**Parameters:**
-
-* **`key`** _(`String`)_: The key of the key/value pair entry to remove from this HashMap.
-
 <a name="HashMap_values"></a>
 ### `async HashMap#values()`
+
+* Returns:  `AsyncIterator<V>`: An async iterator that yields values (of template type `V`) of the type stored in this
+  collection, either inlined objects or CIDs.
 
 Asynchronously emit all values that exist within this HashMap collection. This will cause a
 full traversal of all nodes that make up this collection so may result in many block loads
 from the backing store if the collection is large.
 
-**Return value**  _(`AsyncIterator.<(*|CID)>`)_: An async iterator that yields values of the type stored in this collection, either inlined
-  objects or CIDs.
-
 <a name="HashMap_keys"></a>
 ### `async HashMap#keys()`
+
+* Returns:  `AsyncIterator<string>`: An async iterator that yields string keys stored in this collection.
 
 Asynchronously emit all keys that exist within this HashMap collection. This will cause a
 full traversal of all nodes that make up this collection so may result in many block loads
 from the backing store if the collection is large.
 
-**Return value**  _(`AsyncIterator.<string>`)_: An async iterator that yields string keys stored in this collection.
-
-<a name="HashMap_entries"></a>
-### `async HashMap#entries()`
-
-Asynchronously emit all key/value pairs that exist within this HashMap collection. This
-will cause a full traversal of all nodes that make up this collection so may result in
-many block loads from the backing store if the collection is large.
-
-Entries are returned in tuple form like
-[Map#entries()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/entries),
-an array of key/value pairs where element `0` is the key and `1` is the value.
-
-**Return value**  _(`AsyncIterator.<Object>`)_: An async iterator that yields key/value pair tuples.
+<a name="HashMapImpl_entries"></a>
+### `async * HashMapImpl#entries()`
 
 <a name="HashMap_cids"></a>
 ### `async HashMap#cids()`
+
+* Returns:  `AsyncIterator<CID>`: An async iterator that yields CIDs for the blocks that comprise this HashMap.
 
 Asynchronously emit all CIDs for blocks that make up this HashMap. This will cause a
 full traversal of all nodes that make up this collection so may result in many block loads
 from the backing store if the collection is large.
 
-**Return value**  _(`AsyncIterator.<CID>`)_: An async iterator that yields CIDs for the blocks that comprise this HashMap.
+<a name="HashMapImpl__create"></a>
+### `async HashMapImpl.create(loader, options)`
 
-<a name="HashMap__create"></a>
-### `async HashMap.create(loader[, root][, options])`
+* `loader` `(Loader)`: A loader with `get(cid):block` and `put(cid, block)` functions for
+  loading an storing block data by CID.
+* `options` `(CreateOptions<Codec, V>)`: Options for the HashMap. Defaults are provided but you can tweak
+  behavior according to your needs with these options.
+
+* Returns:  `Promise<HashMap<V>>`: - A HashMap instance, either loaded from an existing root block CID, or a new,
+  empty HashMap if no CID is provided.
 
 Create a new [`HashMap`](#HashMap) instance, beginning empty, or loading from existing data in a
 backing store.
@@ -179,35 +177,15 @@ CIDs. `loader` must have two functions: `get(cid)` which should return the raw b
 or `Uint8Array`) of a block matching the given CID, and `put(cid, block)` that will store the
 provided raw bytes of a block (`block`) and store it with the associated CID.
 
-**Parameters:**
+<a name="HashMapImpl__load"></a>
+### `async HashMapImpl.load(loader, root, options)`
 
-* **`loader`** _(`Object`)_: A loader with `get(cid):block` and `put(cid, block)` functions for
-  loading an storing block data by CID.
-* **`root`** _(`CID`, optional)_: A root of an existing HashMap. Provide a CID if you want to load existing
-  data, otherwise omit this option and a new, empty HashMap will be created.
-* **`options`** _(`Object`, optional)_: Options for the HashMap. Defaults are provided but you can tweak
-  behavior according to your needs with these options.
-  * **`options.blockCodec`** _(`string`, optional, default=`'dag-json'`)_: The IPLD codec used to encode the blocks.
-  * **`options.blockAlg`** _(`string`, optional, default=`'sha2-256'`)_: The hash algorithm to use when creating CIDs for
-    the blocks.
-  * **`options.hashAlg`** _(`string`, optional, default=`'murmur3-32'`)_: The hash algorithm used for indexing this
-    HashMap. `'murmur3-32'` is the x86 32-bit Murmur3 hash algorithm, used by default. If you want
-    to change this default, you need to provide a new algorithm. For custom hash algorithms,
-    `hashAlg`, `hasher` and `hashBytes` must be provided together.
-  * **`options.hasher`** _(`function`, optional, default=`murmur3.x86`)_: A function that takes a byte array
-    (`Uint8Array`) and should return a byte representing a hash of the input. Supply this option if
-    you wish to override the default `'murmur3-32'` hasher.
-  * **`options.hashBytes`** _(`number`, optional, default=`32`)_: The number of bytes to expect from `hasher` function.
-    Supply this option if you wish to override the default `'murmur3-32'` hasher.
-  * **`options.bitWidth`** _(`number`, optional, default=`8`)_: The number of bits to take from the hash of the key at
-    each level of the HashMap tree to form an index. Read more about this option in the
-    [IAMap documentation](https://github.com/rvagg/iamap#async-iamapcreatestore-options).
-  * **`options.bucketSize`** _(`number`, optional, default=`3`)_: The maximum number of elements to store at each leaf
-    of the HashMap tree structure before overflowing to a new node. Read more about this option in
-    the [IAMap documentation](https://github.com/rvagg/iamap#async-iamapcreatestore-options).
+* `loader` `(Loader)`
+* `root` `(CID)`: A root of an existing HashMap. Provide a CID if you want to load existing
+  data.
+* `options` `(CreateOptions<Codec, V>)`
 
-**Return value**  _(`HashMap`)_: - A HashMap instance, either loaded from an existing root block CID, or a new,
-  empty HashMap if no CID is provided.
+* Returns:  `Promise<HashMap<V>>`
 
 ## License and Copyright
 

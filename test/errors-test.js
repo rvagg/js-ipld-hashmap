@@ -54,4 +54,19 @@ describe('Errors', () => {
     const cid = CID.create(1, blockCodec.code, hash) // just a random CID
     await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher })) // , 'bad loader rejects')
   })
+
+  it('bad serialization', async () => {
+    const bytes = blockCodec.encode({ not: 'a', proper: 'hamt' })
+    const hash = await blockHasher.digest(bytes)
+    const cid = CID.create(1, blockCodec.code, hash)
+
+    const store = {
+      get () {
+        return bytes
+      },
+      put () { }
+    }
+
+    await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher }), 'unexpected layout for HashMap block does not match schema')
+  })
 })
