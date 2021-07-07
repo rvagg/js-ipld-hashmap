@@ -1,4 +1,5 @@
 /**
+ * @ignore
  * @template V
  * @template {number} Codec
  * @param {Loader} loader

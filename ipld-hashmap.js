@@ -2,6 +2,10 @@ import { create as createIAMap, load as loadIAMap, registerHasher } from 'iamap'
 import { CID } from 'multiformats/cid'
 import * as Block from 'multiformats/block'
 import { sha256 } from 'multiformats/hashes/sha2'
+import { HashMapRoot as validateHashMapRoot, HashMapNode as validateHashMapNode } from './schema-validate.js'
+import { describe } from 'ipld-schema-describer'
+// @ts-ignore
+import schemaPrint from 'ipld-schema/print.js'
 
 const DEFAULT_HASHER = sha256
 const DEFAULT_HASH_BYTES = 32
@@ -49,6 +53,9 @@ const textDecoder = new TextDecoder()
  * mutation operations may be performed on the same object but its `cid` property will change
  * with mutations.
  *
+ * If consumed with TypeScript typings, `HashMap` is generic over value template type `V`, where various
+ * operations will accept or return template type `V`.
+ *
  * @name HashMap
  * @template V
  * @implements {HashMap<V>}
@@ -62,6 +69,7 @@ const textDecoder = new TextDecoder()
  */
 class HashMapImpl {
   /**
+   * @ignore
    * @param {IAMap<V>} iamap
    */
   constructor (iamap) {
@@ -80,10 +88,10 @@ class HashMapImpl {
    * @memberof HashMap
    * @param {string} key - The key of the key/value pair entry to look up in this HashMap.
    * @return {Promise<V|undefined>}
-   * The value stored for the given `key` which may be any type serializable by IPLD, or a CID to
-   * an existing IPLD object. This should match what was provided by {@link HashMap#set} as the
-   * `value` for this `key`. If the `key` is not stored in this HashMap, `undefined` will be
-   * returned.
+   * The value (of template type `V`) stored for the given `key` which may be any type serializable
+   * by IPLD, or a CID to an existing IPLD object. This should match what was provided by
+   * {@link HashMap#set} as the `value` for this `key`. If the `key` is not stored in this HashMap,
+   * `undefined` will be returned.
    */
   async get (key) {
     return this._iamap.get(key)
@@ -139,8 +147,8 @@ class HashMapImpl {
    * @async
    * @memberof HashMap
    * @param {string} key - The key of the new key/value pair entry to store in this HashMap.
-   * @param {V} value - The value to store, either an object that can be serialized inline
-   * via IPLD or a CID pointing to another object.
+   * @param {V} value - The value (of template type `V`) to store, either an object that can be
+   * serialized inline via IPLD or a CID pointing to another object.
    * @returns {Promise<void>}
    */
   async set (key, value) {
@@ -178,8 +186,8 @@ class HashMapImpl {
    * @function
    * @async
    * @returns {AsyncIterator<V>}
-   * An async iterator that yields values of the type stored in this collection, either inlined
-   * objects or CIDs.
+   * An async iterator that yields values (of template type `V`) of the type stored in this
+   * collection, either inlined objects or CIDs.
    */
   async * values () {
     yield * this._iamap.values()
@@ -283,6 +291,7 @@ class HashMapImpl {
 }
 
 /**
+ * @ignore
  * @template V
  * @template {number} Codec
  * @param {Loader} loader
@@ -317,7 +326,10 @@ export async function _load (loader, root, options) {
   }
   const hasher = options.blockHasher
 
-  /** @type {MultihashHasher} */
+  /**
+   * @ignore
+   * @type {MultihashHasher}
+   */
   const hamtHasher = (() => {
     if ('hasher' in options) {
       if (typeof options.hasher !== 'object' ||
@@ -339,7 +351,10 @@ export async function _load (loader, root, options) {
     }
     return DEFAULT_HASH_BYTES
   })()
-  /** @param {Uint8Array} bytes  */
+  /**
+   * @ignore
+   * @param {Uint8Array} bytes
+   */
   const hashFn = async (bytes) => {
     const hash = await sha256.digest(bytes)
     return hash.digest
@@ -353,6 +368,7 @@ export async function _load (loader, root, options) {
 
   const store = {
     /**
+     * @ignore
      * @param {CID} cid
      * @returns {Promise<V>}
      */
@@ -363,20 +379,24 @@ export async function _load (loader, root, options) {
       }
       // create() validates the block for us
       const block = await Block.create({ bytes, cid, hasher, codec })
+      validateBlock(block.value)
       return block.value
     },
 
     /**
+     * @ignore
      * @param {V} value
      * @returns {Promise<CID>}
      */
     async save (value) {
+      validateBlock(value)
       const block = await Block.encode({ value, codec, hasher })
       await loader.put(block.cid, block.bytes)
       return block.cid
     },
 
     /**
+     * @ignore
      * @param {CID} cid1
      * @param {CID} cid2
      * @returns {boolean}
@@ -386,6 +406,7 @@ export async function _load (loader, root, options) {
     },
 
     /**
+     * @ignore
      * @param {any} obj
      * @returns {boolean}
      */
@@ -404,6 +425,17 @@ export async function _load (loader, root, options) {
   }
 
   return new HashMapImpl(iamap)
+}
+
+/**
+ * @ignore
+ * @param {any} block
+ */
+function validateBlock (block) {
+  if (!validateHashMapNode(block) && !validateHashMapRoot(block)) {
+    const description = schemaPrint(describe(block).schema)
+    throw new Error(`Internal error: unexpected layout for HashMap block does not match schema, got:\n${description}`)
+  }
 }
 
 export const create = HashMapImpl.create
