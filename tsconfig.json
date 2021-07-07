@@ -31,7 +31,8 @@
   "exclude": [
     "node_modules",
     "types",
-    "test"
+    "test",
+    "example.js"
   ],
   "compileOnSave": false
 }
