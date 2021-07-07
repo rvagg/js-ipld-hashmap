@@ -17,24 +17,24 @@
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "iamap": "^1.0.0",
-    "ipld-schema": "^1.1.1",
-    "ipld-schema-describer": "^1.0.2",
-    "multiformats": "^9.1.0"
+    "iamap": "^2.0.0",
+    "ipld-schema": "^1.1.2",
+    "ipld-schema-describer": "^1.0.3",
+    "multiformats": "^9.1.2"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^6.0.4",
-    "@types/chai": "^4.2.19",
+    "@ipld/dag-cbor": "^6.0.5",
+    "@types/chai": "^4.2.20",
     "@types/chai-as-promised": "^7.1.4",
-    "@types/mocha": "^8.2.2",
+    "@types/mocha": "^8.2.3",
     "c8": "^7.7.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "jsdoc4readme": "^1.4.0",
-    "mocha": "^9.0.1",
+    "mocha": "^9.0.2",
     "polendina": "^1.1.0",
     "standard": "^16.0.3",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.5"
   },
   "repository": {
     "type": "git",
