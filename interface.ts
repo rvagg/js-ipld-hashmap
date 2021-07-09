@@ -5,21 +5,25 @@ import { MultihashHasher } from 'multiformats/hashes/interface'
 export interface HashMap<V> {
   readonly cid: CID
 
-  get (key: string): Promise<V|void>
+  get (key: string | Uint8Array): Promise<V|void>
 
-  has (key: string): Promise<boolean>
+  has (key: string | Uint8Array): Promise<boolean>
 
   size (): Promise<number>
 
-  set (key: string, value: V): Promise<void>
+  set (key: string | Uint8Array, value: V): Promise<void>
 
-  delete (key: string): Promise<void>
+  delete (key: string | Uint8Array): Promise<void>
 
   values (): AsyncIterator<V>
 
   keys (): AsyncIterator<string>
 
+  keysRaw (): AsyncIterator<Uint8Array>
+
   entries (): AsyncIterator<[string, V]>
+
+  entriesRaw (): AsyncIterator<[Uint8Array, V]>
 
   cids (): AsyncIterator<CID>
 }

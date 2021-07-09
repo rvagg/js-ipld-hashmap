@@ -86,7 +86,7 @@ class HashMapImpl {
    * @function
    * @async
    * @memberof HashMap
-   * @param {string} key - The key of the key/value pair entry to look up in this HashMap.
+   * @param {string|Uint8Array} key - The key of the key/value pair entry to look up in this HashMap.
    * @return {Promise<V|undefined>}
    * The value (of template type `V`) stored for the given `key` which may be any type serializable
    * by IPLD, or a CID to an existing IPLD object. This should match what was provided by
@@ -105,7 +105,7 @@ class HashMapImpl {
    * @function
    * @async
    * @memberof HashMap
-   * @param {string} key - The key of the key/value pair entry to look up in this HashMap.
+   * @param {string|Uint8Array} key - The key of the key/value pair entry to look up in this HashMap.
    * @return {Promise<boolean>}
    * `true` if the `key` exists in this HashMap, `false` otherwise.
    */
@@ -146,7 +146,7 @@ class HashMapImpl {
    * @function
    * @async
    * @memberof HashMap
-   * @param {string} key - The key of the new key/value pair entry to store in this HashMap.
+   * @param {string|Uint8Array} key - The key of the new key/value pair entry to store in this HashMap.
    * @param {V} value - The value (of template type `V`) to store, either an object that can be
    * serialized inline via IPLD or a CID pointing to another object.
    * @returns {Promise<void>}
@@ -170,7 +170,7 @@ class HashMapImpl {
    * @function
    * @async
    * @memberof HashMap
-   * @param {string} key - The key of the key/value pair entry to remove from this HashMap.
+   * @param {string|Uint8Array} key - The key of the key/value pair entry to remove from this HashMap.
    * @returns {Promise<void>}
    */
   async delete (key) {
@@ -180,9 +180,10 @@ class HashMapImpl {
   /**
    * @name HashMap#values
    * @description
-   * Asynchronously emit all values that exist within this HashMap collection. This will cause a
-   * full traversal of all nodes that make up this collection so may result in many block loads
-   * from the backing store if the collection is large.
+   * Asynchronously emit all values that exist within this HashMap collection.
+   *
+   * This will cause a full traversal of all nodes that make up this collection so may result in
+   * many block loads from the backing store if the collection is large.
    * @function
    * @async
    * @returns {AsyncIterator<V>}
@@ -196,9 +197,11 @@ class HashMapImpl {
   /**
    * @name HashMap#keys
    * @description
-   * Asynchronously emit all keys that exist within this HashMap collection. This will cause a
-   * full traversal of all nodes that make up this collection so may result in many block loads
-   * from the backing store if the collection is large.
+   * Asynchronously emit all keys that exist within this HashMap collection **as strings** rather
+   * than the stored bytes.
+   *
+   * This will cause a full traversal of all nodes that make up this
+   * collection so may result in many block loads from the backing store if the collection is large.
    * @function
    * @async
    * @returns {AsyncIterator<string>}
@@ -206,16 +209,35 @@ class HashMapImpl {
    */
   async * keys () {
     for await (const key of this._iamap.keys()) {
-      // IAMap keys are Buffers, make them strings
+      // IAMap keys are Uint8Arrays, make them strings
       yield textDecoder.decode(key)
     }
   }
 
   /**
+   * @name HashMap#keysRaw
+   * @description
+   * Asynchronously emit all keys that exist within this HashMap collection **as their raw bytes**
+   * rather than being converted to a string.
+   *
+   * This will cause a full traversal of all nodes that make up this collection so may result in
+   * many block loads from the backing store if the collection is large.
+   * @function
+   * @async
+   * @returns {AsyncIterator<Uint8Array>}
+   * An async iterator that yields string keys stored in this collection.
+   */
+  async * keysRaw () {
+    yield * this._iamap.keys()
+  }
+
+  /**
    * @name HashMap#entries
    * @description
-   * Asynchronously emit all key/value pairs that exist within this HashMap collection. This
-   * will cause a full traversal of all nodes that make up this collection so may result in
+   * Asynchronously emit all key/value pairs that exist within this HashMap collection. Keys will be
+   * given **as strings** rather than their raw byte form as stored.
+   *
+   * This will cause a full traversal of all nodes that make up this collection so may result in
    * many block loads from the backing store if the collection is large.
    *
    * Entries are returned in tuple form like
@@ -227,18 +249,42 @@ class HashMapImpl {
    * An async iterator that yields key/value pair tuples.
    */
   async * entries () {
-    for await (const entry of this._iamap.entries()) {
-      // IAMap keys are Buffers, make them strings
-      yield [textDecoder.decode(entry.key), entry.value]
+    for await (const { key, value } of this._iamap.entries()) {
+      // IAMap keys are Uint8Arrays, make them strings
+      yield [textDecoder.decode(key), value]
+    }
+  }
+
+  /**
+   * @name HashMap#entriesRaw
+   * @description
+   * Asynchronously emit all key/value pairs that exist within this HashMap collection. Keys will be
+   * given **as raw bytes** as stored rather than being converted to strings.
+   *
+   * This will cause a full traversal of all nodes that make up this collection so may result in
+   * many block loads from the backing store if the collection is large.
+   *
+   * Entries are returned in tuple form like
+   * [Map#entries()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/entries),
+   * an array of key/value pairs where element `0` is the key and `1` is the value.
+   * @function
+   * @async
+   * @returns {AsyncIterator<[Uint8Array, V]>}
+   * An async iterator that yields key/value pair tuples.
+   */
+  async * entriesRaw () {
+    for await (const { key, value } of this._iamap.entries()) {
+      yield [key, value]
     }
   }
 
   /**
    * @name HashMap#cids
    * @description
-   * Asynchronously emit all CIDs for blocks that make up this HashMap. This will cause a
-   * full traversal of all nodes that make up this collection so may result in many block loads
-   * from the backing store if the collection is large.
+   * Asynchronously emit all CIDs for blocks that make up this HashMap.
+   *
+   * This will cause a full traversal of all nodes that make up this collection so may result in
+   * many block loads from the backing store if the collection is large.
    * @function
    * @async
    * @returns {AsyncIterator<CID>}
