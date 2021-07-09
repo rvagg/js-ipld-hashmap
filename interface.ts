@@ -15,17 +15,17 @@ export interface HashMap<V> {
 
   delete (key: string | Uint8Array): Promise<void>
 
-  values (): AsyncIterator<V>
+  values (): AsyncIterable<V>
 
-  keys (): AsyncIterator<string>
+  keys (): AsyncIterable<string>
 
-  keysRaw (): AsyncIterator<Uint8Array>
+  keysRaw (): AsyncIterable<Uint8Array>
 
-  entries (): AsyncIterator<[string, V]>
+  entries (): AsyncIterable<[string, V]>
 
-  entriesRaw (): AsyncIterator<[Uint8Array, V]>
+  entriesRaw (): AsyncIterable<[Uint8Array, V]>
 
-  cids (): AsyncIterator<CID>
+  cids (): AsyncIterable<CID>
 }
 
 export interface CreateOptions<Codec extends number, V> {
