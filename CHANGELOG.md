@@ -1,3 +1,10 @@
+### [2.0.2](https://github.com/rvagg/js-ipld-hashmap/compare/v2.0.1...v2.0.2) (2021-07-09)
+
+
+### Bug Fixes
+
+* optional hasher and hashBytes params in types defn ([c27113c](https://github.com/rvagg/js-ipld-hashmap/commit/c27113ce904d3f85a9c79e3c4db0e0ea4e19190c))
+
 ### [2.0.1](https://github.com/rvagg/js-ipld-hashmap/compare/v2.0.0...v2.0.1) (2021-07-07)
 
 
