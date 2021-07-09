@@ -29,9 +29,9 @@ export interface CreateOptions<Codec extends number, V> {
 
   blockHasher: MultihashHasher
 
-  hasher: MultihashHasher
+  hasher?: MultihashHasher
 
-  hashBytes: number
+  hashBytes?: number
 
   bitWidth: number
 
