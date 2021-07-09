@@ -8,12 +8,12 @@ export interface HashMap<V> {
     size(): Promise<number>;
     set(key: string | Uint8Array, value: V): Promise<void>;
     delete(key: string | Uint8Array): Promise<void>;
-    values(): AsyncIterator<V>;
-    keys(): AsyncIterator<string>;
-    keysRaw(): AsyncIterator<Uint8Array>;
-    entries(): AsyncIterator<[string, V]>;
-    entriesRaw(): AsyncIterator<[Uint8Array, V]>;
-    cids(): AsyncIterator<CID>;
+    values(): AsyncIterable<V>;
+    keys(): AsyncIterable<string>;
+    keysRaw(): AsyncIterable<Uint8Array>;
+    entries(): AsyncIterable<[string, V]>;
+    entriesRaw(): AsyncIterable<[Uint8Array, V]>;
+    cids(): AsyncIterable<CID>;
 }
 export interface CreateOptions<Codec extends number, V> {
     blockCodec: BlockCodec<Codec, V>;

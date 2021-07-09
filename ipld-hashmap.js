@@ -186,7 +186,7 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator<V>}
+   * @returns {AsyncIterable<V>}
    * An async iterator that yields values (of template type `V`) of the type stored in this
    * collection, either inlined objects or CIDs.
    */
@@ -204,7 +204,7 @@ class HashMapImpl {
    * collection so may result in many block loads from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator<string>}
+   * @returns {AsyncIterable<string>}
    * An async iterator that yields string keys stored in this collection.
    */
   async * keys () {
@@ -224,7 +224,7 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator<Uint8Array>}
+   * @returns {AsyncIterable<Uint8Array>}
    * An async iterator that yields string keys stored in this collection.
    */
   async * keysRaw () {
@@ -245,7 +245,7 @@ class HashMapImpl {
    * an array of key/value pairs where element `0` is the key and `1` is the value.
    * @function
    * @async
-   * @returns {AsyncIterator<[string, V]>}
+   * @returns {AsyncIterable<[string, V]>}
    * An async iterator that yields key/value pair tuples.
    */
   async * entries () {
@@ -269,7 +269,7 @@ class HashMapImpl {
    * an array of key/value pairs where element `0` is the key and `1` is the value.
    * @function
    * @async
-   * @returns {AsyncIterator<[Uint8Array, V]>}
+   * @returns {AsyncIterable<[Uint8Array, V]>}
    * An async iterator that yields key/value pair tuples.
    */
   async * entriesRaw () {
@@ -287,7 +287,7 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
-   * @returns {AsyncIterator<CID>}
+   * @returns {AsyncIterable<CID>}
    * An async iterator that yields CIDs for the blocks that comprise this HashMap.
    */
   async * cids () {
