@@ -1,3 +1,10 @@
+## [2.1.0](https://github.com/rvagg/js-ipld-hashmap/compare/v2.0.2...v2.1.0) (2021-07-09)
+
+
+### Features
+
+* expose ability to interact with keys as bytes ([df722e8](https://github.com/rvagg/js-ipld-hashmap/commit/df722e88614d1add98a1ff7cc3a05b82cd19dada))
+
 ### [2.0.2](https://github.com/rvagg/js-ipld-hashmap/compare/v2.0.1...v2.0.2) (2021-07-09)
 
 
