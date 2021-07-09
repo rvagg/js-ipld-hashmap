@@ -5,6 +5,8 @@ import { sha256 as blockHasher } from 'multiformats/hashes/sha2'
 import * as blockCodec from '@ipld/dag-cbor'
 import { assert } from 'chai'
 
+const textEncoder = new TextEncoder()
+
 async function toArray (asyncIterator) {
   const result = []
   for await (const item of asyncIterator) {
@@ -48,8 +50,20 @@ async function execute (options = {}) {
     const entries = await toArray(map.entries())
     assert.sameDeepMembers(entries, expectedEntries, 'entries() returns expected list')
 
+    const entriesRaw = await toArray(map.entriesRaw())
+    assert.sameDeepMembers(
+      entriesRaw,
+      expectedEntries.map((e) => [textEncoder.encode(e[0]), e[1]]),
+      'entriesRaw() returns expected list')
+
     const keys = await toArray(map.keys())
     assert.sameDeepMembers(keys, expectedEntries.map((e) => e[0]), 'keys() returns expected list')
+
+    const keysRaw = await toArray(map.keysRaw())
+    assert.sameDeepMembers(
+      keysRaw,
+      expectedEntries.map((e) => textEncoder.encode(e[0])),
+      'keysRaw() returns expected list')
 
     const values = await toArray(map.values())
     assert.sameDeepMembers(values, expectedEntries.map((e) => e[1]), 'values() returns expected list')
