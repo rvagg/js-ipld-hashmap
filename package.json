@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "iamap": "^2.0.0",
-    "ipld-schema": "^1.1.2",
+    "ipld-schema": "^2.0.1",
     "ipld-schema-describer": "^1.0.3",
     "multiformats": "^9.1.2"
   },
