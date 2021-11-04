@@ -1,3 +1,10 @@
+### [2.1.8](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.7...v2.1.8) (2021-11-04)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 2.3.5 to 2.4.0 ([cc6790e](https://github.com/rvagg/js-ipld-hashmap/commit/cc6790e2a31d2acd3b5d4f1bde866b9250b14404))
+
 ### [2.1.7](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.6...v2.1.7) (2021-10-18)
 
 
