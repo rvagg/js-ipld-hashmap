@@ -1,3 +1,11 @@
+### [2.1.9](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.8...v2.1.9) (2021-12-09)
+
+
+### Trivial Changes
+
+* **deps-dev:** bump polendina from 1.1.1 to 2.0.0 ([#24](https://github.com/rvagg/js-ipld-hashmap/issues/24)) ([31fc577](https://github.com/rvagg/js-ipld-hashmap/commit/31fc577e989b134e534a8cc2cd7a944e4c93f764))
+* **no-release:** bump actions/setup-node from 2.4.1 to 2.5.0 ([#23](https://github.com/rvagg/js-ipld-hashmap/issues/23)) ([81e51b1](https://github.com/rvagg/js-ipld-hashmap/commit/81e51b1f340be367a6df1a8481979be613af8a6f))
+
 ### [2.1.8](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.7...v2.1.8) (2021-11-04)
 
 
