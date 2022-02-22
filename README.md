@@ -146,7 +146,7 @@ Check whether the provided `key` exists in this HashMap. The equivalent of perfo
 <a name="HashMap_size"></a>
 ### `async HashMap#size()`
 
-* Returns:  `Promise<number>`: An integer greater than or equal to zero indicating the number of key/value pairse stored
+* Returns:  `Promise<number>`: An integer greater than or equal to zero indicating the number of key/value pairs stored
   in this HashMap.
 
 Count the number of key/value pairs stored in this HashMap.
