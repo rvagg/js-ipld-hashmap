@@ -1,3 +1,12 @@
+### [2.1.10](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.9...v2.1.10) (2022-02-23)
+
+
+### Trivial Changes
+
+* **doc:** minor typo in readme ([48dbab7](https://github.com/rvagg/js-ipld-hashmap/commit/48dbab784a2b845d12aedd4b0bb01ba922a2bd8e))
+* **no-release:** bump @ipld/dag-cbor from 6.0.15 to 7.0.0 ([#25](https://github.com/rvagg/js-ipld-hashmap/issues/25)) ([a12cf80](https://github.com/rvagg/js-ipld-hashmap/commit/a12cf80bc9535ddf1451b7f01699e923558fa6ab))
+* **no-release:** bump actions/setup-node from 2.5.0 to 2.5.1 ([#26](https://github.com/rvagg/js-ipld-hashmap/issues/26)) ([6629fc7](https://github.com/rvagg/js-ipld-hashmap/commit/6629fc7e9a027f4eee75afc6fe82f5be8757b7f5))
+
 ### [2.1.9](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.8...v2.1.9) (2021-12-09)
 
 
