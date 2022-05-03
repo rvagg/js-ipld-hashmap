@@ -1,3 +1,17 @@
+### [2.1.11](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.10...v2.1.11) (2022-05-03)
+
+
+### Trivial Changes
+
+* **deps:** bump ipld-schema from 1.1.6 to 2.0.2 ([#37](https://github.com/rvagg/js-ipld-hashmap/issues/37)) ([4163a4b](https://github.com/rvagg/js-ipld-hashmap/commit/4163a4b8088af38d5f1b3fa2007407d8748c85b7))
+* **no-release:** bump actions/checkout from 2.4.0 to 3 ([#29](https://github.com/rvagg/js-ipld-hashmap/issues/29)) ([e852cc9](https://github.com/rvagg/js-ipld-hashmap/commit/e852cc90e0e446b88e7adfe9440237ed852c6fa1))
+* **no-release:** bump actions/setup-node from 2.5.1 to 3.0.0 ([#28](https://github.com/rvagg/js-ipld-hashmap/issues/28)) ([c10f1c5](https://github.com/rvagg/js-ipld-hashmap/commit/c10f1c5e3431b39fcaca93726c267e067c5e9d5c))
+* **no-release:** bump actions/setup-node from 3.0.0 to 3.1.0 ([#33](https://github.com/rvagg/js-ipld-hashmap/issues/33)) ([a60107d](https://github.com/rvagg/js-ipld-hashmap/commit/a60107d69995933178a297d75ea007324aa63312))
+* **no-release:** bump actions/setup-node from 3.1.0 to 3.1.1 ([#34](https://github.com/rvagg/js-ipld-hashmap/issues/34)) ([a6f9454](https://github.com/rvagg/js-ipld-hashmap/commit/a6f94544976ffa2c84e67092b9ec6c44b46c4306))
+* **no-release:** bump mocha from 9.2.2 to 10.0.0 ([#36](https://github.com/rvagg/js-ipld-hashmap/issues/36)) ([944ac14](https://github.com/rvagg/js-ipld-hashmap/commit/944ac142f27134964ce4f04bc2b1de00d4787b94))
+* **no-release:** bump polendina from 2.0.15 to 3.0.0 ([#38](https://github.com/rvagg/js-ipld-hashmap/issues/38)) ([38b30ed](https://github.com/rvagg/js-ipld-hashmap/commit/38b30ed3850364ede5813f546cf35a3174ce5b81))
+* **no-release:** bump standard from 16.0.4 to 17.0.0 ([#35](https://github.com/rvagg/js-ipld-hashmap/issues/35)) ([010356f](https://github.com/rvagg/js-ipld-hashmap/commit/010356f31c21d240223c18bce5d05e4d9bb331db))
+
 ### [2.1.10](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.9...v2.1.10) (2022-02-23)
 
 
