@@ -1,4 +1,4 @@
-/** Auto-generated with ipld-schema-validator@1.0.0 at Thu Jun 24 2021 from IPLD Schema:
+/** Auto-generated with ipld-schema-validator@1.0.1 at Tue Aug 16 2022 from IPLD Schema:
  *
  * # Root node layout
  * type HashMapRoot struct {

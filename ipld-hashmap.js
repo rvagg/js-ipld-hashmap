@@ -5,7 +5,7 @@ import { sha256 } from 'multiformats/hashes/sha2'
 import { HashMapRoot as validateHashMapRoot, HashMapNode as validateHashMapNode } from './schema-validate.js'
 import { describe } from 'ipld-schema-describer'
 // @ts-ignore
-import schemaPrint from 'ipld-schema/print.js'
+import { print as schemaPrint } from 'ipld-schema/print.js'
 
 const DEFAULT_HASHER = sha256
 const DEFAULT_HASH_BYTES = 32
@@ -62,9 +62,9 @@ const textDecoder = new TextDecoder()
  * @class
  * @hideconstructor
  * @property {CID} cid - The _current_ CID of this HashMap. It is important to note that this CID
- * will change when successfully performing mutation operations {@link HashMap#set} or
- * {@link HashMap#delete}. Where a {@link HashMap#set} does not change an existing value (because
- * a key already exists with that value) or {@link HashMap#delete} does not delete an existing
+ * will change when successfully performing mutation operations `set()` or
+ * `delete()`. Where a `set()` does not change an existing value (because
+ * a key already exists with that value) or `delete()` does not delete an existing
  * key/value pair (because it doesn't already exist in this HashMap), the `cid` will not change.
  */
 class HashMapImpl {

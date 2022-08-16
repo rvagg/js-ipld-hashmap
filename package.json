@@ -9,32 +9,33 @@
     "test:node": "c8 --check-coverage --exclude schema-validate.js --exclude test/ --branches 100 --functions 100 --lines 100 mocha test/*-test.js",
     "test:browser": "polendina --page --worker --serviceworker --cleanup test/*-test.js",
     "test": "npm run lint && npm run build:types && npm run test:node && npm run test:browser",
-    "coverage": "c8 --reporter=html mocha test/*-test.js && npx st -d coverage -p 8080",
+    "coverage": "c8 --reporter=html mocha test/*-test.js && npm_config_yes=true npx st -d coverage -p 8080",
     "build": "npm run build:types",
     "build:types": "tsc --build",
-    "docs": "jsdoc4readme --readme ipld-hashmap.js"
+    "docs": "jsdoc4readme --readme ipld-hashmap.js",
+    "schema-validator": "npm_config_yes=true npx ipld-schema-validator to-js hashmap.ipldsch  > schema-validate.js"
   },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "iamap": "^2.0.0",
+    "iamap": "^2.0.12",
     "ipld-schema": "^3.0.2",
-    "ipld-schema-describer": "^1.0.3",
-    "multiformats": "^9.1.2"
+    "ipld-schema-describer": "^2.0.0",
+    "multiformats": "^9.7.1"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^7.0.0",
-    "@types/chai": "^4.2.20",
-    "@types/chai-as-promised": "^7.1.4",
-    "@types/mocha": "^9.0.0",
-    "c8": "^7.7.3",
-    "chai": "^4.3.4",
+    "@ipld/dag-cbor": "^7.0.2",
+    "@types/chai": "^4.3.3",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/mocha": "^9.1.1",
+    "c8": "^7.12.0",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "jsdoc4readme": "^1.4.0",
     "mocha": "^10.0.0",
-    "polendina": "^3.0.0",
+    "polendina": "^3.1.0",
     "standard": "^17.0.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.7.4"
   },
   "repository": {
     "type": "git",
