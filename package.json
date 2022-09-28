@@ -27,7 +27,7 @@
     "@ipld/dag-cbor": "^7.0.2",
     "@types/chai": "^4.3.3",
     "@types/chai-as-promised": "^7.1.5",
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^10.0.0",
     "c8": "^7.12.0",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
