@@ -1,3 +1,12 @@
+## [2.1.13](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.12...v2.1.13) (2022-10-13)
+
+
+### Trivial Changes
+
+* **deps:** bump multiformats from 9.9.0 to 10.0.0 ([#47](https://github.com/rvagg/js-ipld-hashmap/issues/47)) ([8afa704](https://github.com/rvagg/js-ipld-hashmap/commit/8afa704f90bb90c559718f663016078db0d71a0f))
+* **no-release:** bump @types/mocha from 9.1.1 to 10.0.0 ([#46](https://github.com/rvagg/js-ipld-hashmap/issues/46)) ([eb1b7cf](https://github.com/rvagg/js-ipld-hashmap/commit/eb1b7cf0dc225493b23c75774b886f60b9bf2df6))
+* **no-release:** bump actions/setup-node from 3.4.1 to 3.5.0 ([#45](https://github.com/rvagg/js-ipld-hashmap/issues/45)) ([f22b5b8](https://github.com/rvagg/js-ipld-hashmap/commit/f22b5b8afeebe9a6d190369a44a6c7aec9dcff9b))
+
 ## [2.1.12](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.11...v2.1.12) (2022-08-16)
 
 
