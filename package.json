@@ -24,7 +24,7 @@
     "multiformats": "^10.0.0"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^7.0.2",
+    "@ipld/dag-cbor": "^8.0.0",
     "@types/chai": "^4.3.3",
     "@types/chai-as-promised": "^7.1.5",
     "@types/mocha": "^10.0.0",
