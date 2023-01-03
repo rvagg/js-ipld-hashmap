@@ -1,3 +1,12 @@
+## [2.1.14](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.13...v2.1.14) (2023-01-03)
+
+
+### Trivial Changes
+
+* **deps-dev:** bump @ipld/dag-cbor from 7.0.3 to 8.0.0 ([ea85213](https://github.com/rvagg/js-ipld-hashmap/commit/ea85213d4a9c70cb6b3b24e58b89611a280440d7))
+* **deps:** bump multiformats from 10.0.3 to 11.0.0 ([af827c7](https://github.com/rvagg/js-ipld-hashmap/commit/af827c757c76ab4ede511ade913445196f04a80f))
+* **no-release:** bump actions/setup-node from 3.5.0 to 3.5.1 ([#48](https://github.com/rvagg/js-ipld-hashmap/issues/48)) ([957f12b](https://github.com/rvagg/js-ipld-hashmap/commit/957f12b6d5d7bd1d1be486abed56a043d910a5c3))
+
 ## [2.1.13](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.12...v2.1.13) (2022-10-13)
 
 
