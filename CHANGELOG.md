@@ -1,3 +1,15 @@
+## [2.1.16](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.15...v2.1.16) (2023-01-06)
+
+
+### Bug Fixes
+
+* release with Node.js 18 ([95ec4c4](https://github.com/rvagg/js-ipld-hashmap/commit/95ec4c4df41ad22d7658e14d6f6c07dff0c6092c))
+
+
+### Trivial Changes
+
+* **deps-dev:** bump @ipld/dag-cbor from 8.0.1 to 9.0.0 ([cc5a507](https://github.com/rvagg/js-ipld-hashmap/commit/cc5a50711d2c8e23f6810bee09b418ca066b4248))
+
 ## [2.1.15](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.14...v2.1.15) (2023-01-06)
 
 
