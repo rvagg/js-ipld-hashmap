@@ -437,7 +437,7 @@ export async function _load (loader, root, options) {
      */
     async load (cid) {
       let block
-      if (typeof loader.getBlock === 'function'){
+      if (typeof loader.getBlock === 'function') {
         block = await loader.getBlock(cid)
       } else {
         const bytes = await loader.get(cid)
