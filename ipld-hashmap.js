@@ -459,7 +459,7 @@ export async function _load (loader, root, options) {
     async save (value) {
       validateBlock(value)
       const block = await Block.encode({ value, codec, hasher })
-      if (typeof loader.putBlock === 'function'){
+      if (typeof loader.putBlock === 'function') {
         await loader.putBlock(block)
       } else {
         await loader.put(block.cid, block.bytes)
