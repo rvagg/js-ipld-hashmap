@@ -1,3 +1,10 @@
+## [2.1.17](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.16...v2.1.17) (2023-03-17)
+
+
+### Trivial Changes
+
+* **deps-dev:** bump typescript from 4.9.5 to 5.0.2 ([5adc139](https://github.com/rvagg/js-ipld-hashmap/commit/5adc1392cd015aa4cf108a44bdbf6db7b8ee2428))
+
 ## [2.1.16](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.15...v2.1.16) (2023-01-06)
 
 
