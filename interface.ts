@@ -37,9 +37,9 @@ export interface CreateOptions<Codec extends number, V> {
 
   hashBytes?: number
 
-  bitWidth: number
+  bitWidth?: number
 
-  bucketSize: number
+  bucketSize?: number
 }
 
 export interface Loader {
