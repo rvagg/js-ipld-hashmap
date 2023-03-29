@@ -351,7 +351,8 @@ export async function _load (loader, root, options) {
   if (!loader || typeof loader.get !== 'function' || typeof loader.put !== 'function') {
     throw new TypeError('\'loader\' object with get() and put() methods is required')
   }
-  if (!root && !('bitWidth' in options) || !('bucketSize' in options)  ) {
+
+  if (!root && (!('bitWidth' in options) || !('bucketSize' in options))) {
     throw new TypeError('\'bitWidth\' and \'bucketSize\' required if root does not exist')
   }
 
