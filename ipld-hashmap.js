@@ -352,10 +352,6 @@ export async function _load (loader, root, options) {
     throw new TypeError('\'loader\' object with get() and put() methods is required')
   }
 
-  if (!root && (!('bitWidth' in options) || !('bucketSize' in options))) {
-    throw new TypeError('\'bitWidth\' and \'bucketSize\' required if root does not exist')
-  }
-
   if (typeof options !== 'object') {
     throw new TypeError('An \'options\' argument is required')
   }
