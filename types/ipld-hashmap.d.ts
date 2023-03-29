@@ -4,10 +4,10 @@
  * @template {number} Codec
  * @param {Loader} loader
  * @param {CID|null} root
- * @param {CreateOptions<Codec, V>} options
+ * @param {LoadOptions<Codec, V>} options
  * @returns {Promise<HashMap<V>>}
  */
-export function _load<V, Codec extends number>(loader: Loader, root: CID | null, options: import("./interface").CreateOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
+export function _load<V, Codec extends number>(loader: Loader, root: CID | null, options: import("./interface").LoadOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
 /**
  * Create a new {@link HashMap} instance, beginning empty, or loading from existing data in a
  * backing store.
@@ -35,10 +35,10 @@ export function create<V, Codec extends number>(loader: Loader, options: import(
  * @param {Loader} loader
  * @param {CID} root - A root of an existing HashMap. Provide a CID if you want to load existing
  * data.
- * @param {CreateOptions<Codec, V>} options
+ * @param {LoadOptions<Codec, V>} options
  * @returns {Promise<HashMap<V>>}
  */
-export function load<V, Codec extends number>(loader: Loader, root: CID, options: import("./interface").CreateOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
+export function load<V, Codec extends number>(loader: Loader, root: CID, options: import("./interface").LoadOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
 /**
  * <V>
  */
@@ -57,8 +57,12 @@ export type HashMap<V> = import('./interface').HashMap<V>;
  */
 export type CreateOptions<Codec extends number, V> = import('./interface').CreateOptions<Codec, V>;
 /**
+ * <Codec,V>
+ */
+export type LoadOptions<Codec extends number, V> = import('./interface').LoadOptions<Codec, V>;
+/**
  * <V>
  */
 export type Loader = import('./interface').Loader;
-import { CID } from "multiformats/cid";
+import { CID } from 'multiformats/cid';
 //# sourceMappingURL=ipld-hashmap.d.ts.map
