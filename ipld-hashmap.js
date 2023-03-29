@@ -38,11 +38,6 @@ const textDecoder = new TextDecoder()
  * @typedef {import('./interface').CreateOptions<Codec,V>} CreateOptions<Codec,V>
  */
 /**
- * @template {number} Codec
- * @template V
- * @typedef {import('./interface').LoadOptions<Codec,V>} LoadOptions<Codec,V>
- */
-/**
  * @typedef {import('./interface').Loader} Loader<V>
  */
 
@@ -333,7 +328,7 @@ class HashMapImpl {
    * @param {Loader} loader
    * @param {CID} root - A root of an existing HashMap. Provide a CID if you want to load existing
    * data.
-   * @param {LoadOptions<Codec, V>} options
+   * @param {CreateOptions<Codec, V>} options
    * @returns {Promise<HashMap<V>>}
    */
   static async load (loader, root, options) {
@@ -347,7 +342,7 @@ class HashMapImpl {
  * @template {number} Codec
  * @param {Loader} loader
  * @param {CID|null} root
- * @param {LoadOptions<Codec, V>} options
+ * @param {CreateOptions<Codec, V>} options
  * @returns {Promise<HashMap<V>>}
  */
 export async function _load (loader, root, options) {
@@ -355,6 +350,9 @@ export async function _load (loader, root, options) {
 
   if (!loader || typeof loader.get !== 'function' || typeof loader.put !== 'function') {
     throw new TypeError('\'loader\' object with get() and put() methods is required')
+  }
+  if (!root && !('bitWidth' in options) || !('bucketSize' in options)  ) {
+    throw new TypeError('\'bitWidth\' and \'bucketSize\' required if root does not exist')
   }
 
   if (typeof options !== 'object') {

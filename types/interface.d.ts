@@ -20,14 +20,8 @@ export interface CreateOptions<Codec extends number, V> {
     blockHasher: MultihashHasher;
     hasher?: MultihashHasher;
     hashBytes?: number;
-    bitWidth: number;
-    bucketSize: number;
-}
-export interface LoadOptions<Codec extends number, V> {
-    blockCodec: BlockCodec<Codec, V>;
-    blockHasher: MultihashHasher;
-    hasher?: MultihashHasher;
-    hashBytes?: number;
+    bitWidth?: number;
+    bucketSize?: number;
 }
 export interface Loader {
     get(cid: CID): Promise<Uint8Array>;
