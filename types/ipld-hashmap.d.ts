@@ -60,5 +60,5 @@ export type CreateOptions<Codec extends number, V> = import('./interface').Creat
  * <V>
  */
 export type Loader = import('./interface').Loader;
-import { CID } from "multiformats/cid";
+import { CID } from 'multiformats/cid';
 //# sourceMappingURL=ipld-hashmap.d.ts.map
