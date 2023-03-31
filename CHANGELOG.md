@@ -1,3 +1,10 @@
+## [2.1.18](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.17...v2.1.18) (2023-03-31)
+
+
+### Bug Fixes
+
+* **typescript:** optional bitWidth and bucketSize when loading ([#56](https://github.com/rvagg/js-ipld-hashmap/issues/56)) ([22c41cc](https://github.com/rvagg/js-ipld-hashmap/commit/22c41cc6fcb07aed54dc3b6dd6685a61ffaf99ea))
+
 ## [2.1.17](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.16...v2.1.17) (2023-03-17)
 
 
