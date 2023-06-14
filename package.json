@@ -21,7 +21,7 @@
     "iamap": "^3.0.1",
     "ipld-schema": "^3.0.2",
     "ipld-schema-describer": "^2.0.0",
-    "multiformats": "^11.0.0"
+    "multiformats": "^12.0.0"
   },
   "devDependencies": {
     "@ipld/dag-cbor": "^9.0.0",
