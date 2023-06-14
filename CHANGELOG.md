@@ -1,3 +1,16 @@
+## [3.0.0](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.18...v3.0.0) (2023-06-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop Node.js 14.x support (#59)
+
+### Trivial Changes
+
+* **deps-dev:** bump c8 from 7.14.0 to 8.0.0 ([4052ba2](https://github.com/rvagg/js-ipld-hashmap/commit/4052ba2cde89b868c50183c322cb40f4620f2c8e))
+* **deps:** bump iamap from 2.0.17 to 3.0.1 ([de20235](https://github.com/rvagg/js-ipld-hashmap/commit/de20235e7fb3cd43b0fdbdb9ed2eb2efc854a8c7))
+* drop Node.js 14.x support ([#59](https://github.com/rvagg/js-ipld-hashmap/issues/59)) ([55bc393](https://github.com/rvagg/js-ipld-hashmap/commit/55bc393f84d854d29a4139416c7190c3d60879c3))
+
 ## [2.1.18](https://github.com/rvagg/js-ipld-hashmap/compare/v2.1.17...v2.1.18) (2023-03-31)
 
 
