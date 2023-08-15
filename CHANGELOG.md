@@ -1,3 +1,10 @@
+## [3.0.2](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.1...v3.0.2) (2023-08-15)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 3.6.0 to 3.8.0 ([477af69](https://github.com/rvagg/js-ipld-hashmap/commit/477af69d7f6ee4b3902f5990365f1b3b0445f3aa))
+
 ## [3.0.1](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.0...v3.0.1) (2023-06-15)
 
 
