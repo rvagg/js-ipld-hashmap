@@ -1,6 +1,6 @@
 {
   "name": "ipld-hashmap",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "A JavaScript implementation of the IPLD HashMap specification",
   "main": "ipld-hashmap.js",
   "type": "module",

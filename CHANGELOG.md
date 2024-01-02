@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.4...v3.0.5) (2024-01-02)
+
+
+### Trivial Changes
+
+* **deps:** bump multiformats from 12.1.3 to 13.0.0 ([d3d652c](https://github.com/rvagg/js-ipld-hashmap/commit/d3d652ce432e3697b768b24ceb232bee6804ae64))
+
 ## [3.0.4](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.3...v3.0.4) (2023-10-25)
 
 
