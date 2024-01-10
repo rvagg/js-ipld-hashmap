@@ -1,3 +1,10 @@
+## [3.0.7](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.6...v3.0.7) (2024-01-10)
+
+
+### Trivial Changes
+
+* **deps:** bump iamap from 3.0.9 to 4.0.0 ([9dff179](https://github.com/rvagg/js-ipld-hashmap/commit/9dff179c56c5c85a76dec8ef4a551e0928562191))
+
 ## [3.0.6](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.5...v3.0.6) (2024-01-10)
 
 
