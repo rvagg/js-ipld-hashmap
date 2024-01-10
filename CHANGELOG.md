@@ -1,3 +1,10 @@
+## [3.0.6](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.5...v3.0.6) (2024-01-10)
+
+
+### Trivial Changes
+
+* **deps-dev:** bump c8 from 8.0.1 to 9.0.0 ([f440368](https://github.com/rvagg/js-ipld-hashmap/commit/f440368bc47d10eef59a17369a1070dfe15a02e5))
+
 ## [3.0.5](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.4...v3.0.5) (2024-01-02)
 
 
