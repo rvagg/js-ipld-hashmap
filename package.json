@@ -18,7 +18,7 @@
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "iamap": "^3.0.1",
+    "iamap": "^4.0.0",
     "ipld-schema": "^3.0.2",
     "ipld-schema-describer": "^3.0.2",
     "multiformats": "^13.0.0"
