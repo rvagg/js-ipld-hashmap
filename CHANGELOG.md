@@ -1,3 +1,10 @@
+## [3.0.9](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.8...v3.0.9) (2024-01-11)
+
+
+### Trivial Changes
+
+* **deps-dev:** bump chai from 4.3.10 to 5.0.0 ([ca5b24e](https://github.com/rvagg/js-ipld-hashmap/commit/ca5b24e8a169f8f48e9c82c4a9fda3817ccc9d7e))
+
 ## [3.0.8](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.7...v3.0.8) (2024-01-11)
 
 
