@@ -19,23 +19,22 @@
   "license": "Apache-2.0",
   "dependencies": {
     "iamap": "^4.0.0",
-    "ipld-schema": "^3.0.2",
-    "ipld-schema-describer": "^3.0.2",
-    "multiformats": "^13.0.0"
+    "ipld-schema": "^3.0.3",
+    "ipld-schema-describer": "^3.0.6",
+    "multiformats": "^13.0.1"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^9.0.0",
-    "@types/chai": "^4.3.3",
-    "@types/chai-as-promised": "^7.1.5",
-    "@types/mocha": "^10.0.0",
+    "@ipld/dag-cbor": "^9.0.8",
+    "@rvagg/chai-as-promised": "^8.0.1",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
     "c8": "^9.0.0",
     "chai": "^5.0.0",
-    "chai-as-promised": "^7.1.1",
     "jsdoc4readme": "^1.4.0",
-    "mocha": "^10.0.0",
-    "polendina": "^3.1.0",
-    "standard": "^17.0.0",
-    "typescript": "^5.0.2"
+    "mocha": "^10.2.0",
+    "polendina": "^3.2.1",
+    "standard": "^17.1.0",
+    "typescript": "^5.3.3"
   },
   "repository": {
     "type": "git",

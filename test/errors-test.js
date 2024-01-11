@@ -4,8 +4,8 @@ import { create as createHashMap, load as loadHashMap } from '../ipld-hashmap.js
 import { CID } from 'multiformats/cid'
 import { sha256 as blockHasher } from 'multiformats/hashes/sha2'
 import * as blockCodec from '@ipld/dag-cbor'
-import chai from 'chai'
-import chaiAsPromised from 'chai-as-promised'
+import * as chai from 'chai'
+import chaiAsPromised from '@rvagg/chai-as-promised'
 
 chai.use(chaiAsPromised)
 const { assert } = chai
