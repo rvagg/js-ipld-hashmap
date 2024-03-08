@@ -436,12 +436,17 @@ export async function _load (loader, root, options) {
      * @returns {Promise<V>}
      */
     async load (cid) {
-      const bytes = await loader.get(cid)
-      if (!bytes) {
+      let block
+      if (typeof loader.getBlock === 'function') {
+        block = await loader.getBlock(cid)
+      } else {
+        const bytes = await loader.get(cid)
+        // create() validates the block for us
+        block = await Block.create({ bytes, cid, hasher, codec })
+      }
+      if (!block) {
         throw new Error(`Could not load block for: ${cid}`)
       }
-      // create() validates the block for us
-      const block = await Block.create({ bytes, cid, hasher, codec })
       validateBlock(block.value)
       return block.value
     },
@@ -454,7 +459,11 @@ export async function _load (loader, root, options) {
     async save (value) {
       validateBlock(value)
       const block = await Block.encode({ value, codec, hasher })
-      await loader.put(block.cid, block.bytes)
+      if (typeof loader.putBlock === 'function') {
+        await loader.putBlock(block)
+      } else {
+        await loader.put(block.cid, block.bytes)
+      }
       return block.cid
     },
 
