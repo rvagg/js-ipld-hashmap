@@ -7,7 +7,7 @@
  * @param {CreateOptions<Codec, V>} options
  * @returns {Promise<HashMap<V>>}
  */
-export function _load<V, Codec extends number>(loader: Loader, root: CID | null, options: import("./interface").CreateOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
+export function _load<V, Codec extends number>(loader: Loader, root: CID | null, options: CreateOptions<Codec, V>): Promise<HashMap<V>>;
 /**
  * Create a new {@link HashMap} instance, beginning empty, or loading from existing data in a
  * backing store.
@@ -28,7 +28,7 @@ export function _load<V, Codec extends number>(loader: Loader, root: CID | null,
  * @return {Promise<HashMap<V>>} - A HashMap instance, either loaded from an existing root block CID, or a new,
  * empty HashMap if no CID is provided.
  */
-export function create<V, Codec extends number>(loader: Loader, options: import("./interface").CreateOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
+export function create<V, Codec extends number>(loader: Loader, options: CreateOptions<Codec, V>): Promise<HashMap<V>>;
 /**
  * @template V
  * @template {number} Codec
@@ -38,27 +38,29 @@ export function create<V, Codec extends number>(loader: Loader, options: import(
  * @param {CreateOptions<Codec, V>} options
  * @returns {Promise<HashMap<V>>}
  */
-export function load<V, Codec extends number>(loader: Loader, root: CID, options: import("./interface").CreateOptions<Codec, V>): Promise<import("./interface").HashMap<V>>;
+export function load<V, Codec extends number>(loader: Loader, root: CID, options: CreateOptions<Codec, V>): Promise<HashMap<V>>;
 /**
  * <V>
  */
-export type IAMap<V> = import('iamap').IAMap<V>;
+export type IAMap<V> = import("iamap").IAMap<V>;
 /**
  * <V>
  */
-export type Store<V> = import('iamap').Store<V>;
-export type MultihashHasher = import('multiformats/hashes/interface').MultihashHasher;
+export type Store<V> = import("iamap").Store<V>;
+export type StoreOperationOptions = import("iamap").StoreOperationOptions;
+export type MultihashHasher = import("multiformats/hashes/interface").MultihashHasher;
 /**
  * <V>
  */
-export type HashMap<V> = import('./interface').HashMap<V>;
+export type HashMap<V> = import("./interface.js").HashMap<V>;
 /**
  * <Codec,V>
  */
-export type CreateOptions<Codec extends number, V> = import('./interface').CreateOptions<Codec, V>;
+export type CreateOptions<Codec extends number, V> = import("./interface.js").CreateOptions<Codec, V>;
 /**
  * <V>
  */
-export type Loader = import('./interface').Loader;
+export type Loader = import("./interface.js").Loader;
+export type SignalOptions = import("./interface.js").SignalOptions;
 import { CID } from 'multiformats/cid';
 //# sourceMappingURL=ipld-hashmap.d.ts.map

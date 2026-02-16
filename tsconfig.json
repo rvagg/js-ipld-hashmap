@@ -16,9 +16,9 @@
     "strict": true,
     "alwaysStrict": true,
     "esModuleInterop": true,
-    "target": "ES2018",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "declaration": true,
     "declarationMap": true,
     "outDir": "types",
@@ -31,6 +31,7 @@
   "exclude": [
     "node_modules",
     "types",
+    "build",
     "test",
     "example.js"
   ],

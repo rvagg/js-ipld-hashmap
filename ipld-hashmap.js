@@ -3,6 +3,7 @@ import { CID } from 'multiformats/cid'
 import * as Block from 'multiformats/block'
 import { sha256 } from 'multiformats/hashes/sha2'
 import { HashMapRoot as validateHashMapRoot, HashMapNode as validateHashMapNode } from './schema-validate.js'
+// @ts-ignore
 import { describe } from 'ipld-schema-describer'
 // @ts-ignore
 import { print as schemaPrint } from 'ipld-schema/print.js'
@@ -26,19 +27,21 @@ const textDecoder = new TextDecoder()
  * @typedef {import('iamap').Store<V>} Store<V>
  */
 /**
+ * @typedef {import('iamap').StoreOperationOptions} StoreOperationOptions
  * @typedef {import('multiformats/hashes/interface').MultihashHasher} MultihashHasher
  */
 /**
  * @template V
- * @typedef {import('./interface').HashMap<V>} HashMap<V>
+ * @typedef {import('./interface.js').HashMap<V>} HashMap<V>
  */
 /**
  * @template {number} Codec
  * @template V
- * @typedef {import('./interface').CreateOptions<Codec,V>} CreateOptions<Codec,V>
+ * @typedef {import('./interface.js').CreateOptions<Codec,V>} CreateOptions<Codec,V>
  */
 /**
- * @typedef {import('./interface').Loader} Loader<V>
+ * @typedef {import('./interface.js').Loader} Loader<V>
+ * @typedef {import('./interface.js').SignalOptions} SignalOptions
  */
 
 /**
@@ -87,14 +90,15 @@ class HashMapImpl {
    * @async
    * @memberof HashMap
    * @param {string|Uint8Array} key - The key of the key/value pair entry to look up in this HashMap.
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @return {Promise<V|undefined>}
    * The value (of template type `V`) stored for the given `key` which may be any type serializable
    * by IPLD, or a CID to an existing IPLD object. This should match what was provided by
    * {@link HashMap#set} as the `value` for this `key`. If the `key` is not stored in this HashMap,
    * `undefined` will be returned.
    */
-  async get (key) {
-    return this._iamap.get(key)
+  async get (key, options) {
+    return this._iamap.get(key, options)
   }
 
   /**
@@ -106,11 +110,12 @@ class HashMapImpl {
    * @async
    * @memberof HashMap
    * @param {string|Uint8Array} key - The key of the key/value pair entry to look up in this HashMap.
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @return {Promise<boolean>}
    * `true` if the `key` exists in this HashMap, `false` otherwise.
    */
-  async has (key) {
-    return this._iamap.has(key)
+  async has (key, options) {
+    return this._iamap.has(key, options)
   }
 
   /**
@@ -120,12 +125,13 @@ class HashMapImpl {
    * @function
    * @async
    * @memberof HashMap
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @return {Promise<number>}
    * An integer greater than or equal to zero indicating the number of key/value pairse stored
    * in this HashMap.
    */
-  async size () {
-    return this._iamap.size()
+  async size (options) {
+    return this._iamap.size(options)
   }
 
   /**
@@ -149,10 +155,11 @@ class HashMapImpl {
    * @param {string|Uint8Array} key - The key of the new key/value pair entry to store in this HashMap.
    * @param {V} value - The value (of template type `V`) to store, either an object that can be
    * serialized inline via IPLD or a CID pointing to another object.
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {Promise<void>}
    */
-  async set (key, value) {
-    this._iamap = await this._iamap.set(key, value)
+  async set (key, value, options) {
+    this._iamap = await this._iamap.set(key, value, options)
   }
 
   /**
@@ -171,10 +178,11 @@ class HashMapImpl {
    * @async
    * @memberof HashMap
    * @param {string|Uint8Array} key - The key of the key/value pair entry to remove from this HashMap.
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {Promise<void>}
    */
-  async delete (key) {
-    this._iamap = await this._iamap.delete(key)
+  async delete (key, options) {
+    this._iamap = await this._iamap.delete(key, options)
   }
 
   /**
@@ -186,12 +194,13 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<V>}
    * An async iterator that yields values (of template type `V`) of the type stored in this
    * collection, either inlined objects or CIDs.
    */
-  async * values () {
-    yield * this._iamap.values()
+  async * values (options) {
+    yield * this._iamap.values(options)
   }
 
   /**
@@ -204,11 +213,12 @@ class HashMapImpl {
    * collection so may result in many block loads from the backing store if the collection is large.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<string>}
    * An async iterator that yields string keys stored in this collection.
    */
-  async * keys () {
-    for await (const key of this._iamap.keys()) {
+  async * keys (options) {
+    for await (const key of this._iamap.keys(options)) {
       // IAMap keys are Uint8Arrays, make them strings
       yield textDecoder.decode(key)
     }
@@ -224,11 +234,12 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<Uint8Array>}
    * An async iterator that yields string keys stored in this collection.
    */
-  async * keysRaw () {
-    yield * this._iamap.keys()
+  async * keysRaw (options) {
+    yield * this._iamap.keys(options)
   }
 
   /**
@@ -245,11 +256,12 @@ class HashMapImpl {
    * an array of key/value pairs where element `0` is the key and `1` is the value.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<[string, V]>}
    * An async iterator that yields key/value pair tuples.
    */
-  async * entries () {
-    for await (const { key, value } of this._iamap.entries()) {
+  async * entries (options) {
+    for await (const { key, value } of this._iamap.entries(options)) {
       // IAMap keys are Uint8Arrays, make them strings
       yield [textDecoder.decode(key), value]
     }
@@ -269,11 +281,12 @@ class HashMapImpl {
    * an array of key/value pairs where element `0` is the key and `1` is the value.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<[Uint8Array, V]>}
    * An async iterator that yields key/value pair tuples.
    */
-  async * entriesRaw () {
-    for await (const { key, value } of this._iamap.entries()) {
+  async * entriesRaw (options) {
+    for await (const { key, value } of this._iamap.entries(options)) {
       yield [key, value]
     }
   }
@@ -287,11 +300,12 @@ class HashMapImpl {
    * many block loads from the backing store if the collection is large.
    * @function
    * @async
+   * @param {SignalOptions} [options] - Optional parameters. `signal` can be used to abort the operation.
    * @returns {AsyncIterable<CID>}
    * An async iterator that yields CIDs for the blocks that comprise this HashMap.
    */
-  async * cids () {
-    yield * this._iamap.ids()
+  async * cids (options) {
+    yield * this._iamap.ids(options)
   }
 
   get cid () {
@@ -433,10 +447,12 @@ export async function _load (loader, root, options) {
     /**
      * @ignore
      * @param {CID} cid
+     * @param {StoreOperationOptions} [storeOptions]
      * @returns {Promise<V>}
      */
-    async load (cid) {
-      const bytes = await loader.get(cid)
+    async load (cid, storeOptions) {
+      const signal = storeOptions && storeOptions.signal
+      const bytes = await loader.get(cid, signal ? { signal } : undefined)
       if (!bytes) {
         throw new Error(`Could not load block for: ${cid}`)
       }
@@ -449,12 +465,14 @@ export async function _load (loader, root, options) {
     /**
      * @ignore
      * @param {V} value
+     * @param {StoreOperationOptions} [storeOptions]
      * @returns {Promise<CID>}
      */
-    async save (value) {
+    async save (value, storeOptions) {
+      const signal = storeOptions && storeOptions.signal
       validateBlock(value)
       const block = await Block.encode({ value, codec, hasher })
-      await loader.put(block.cid, block.bytes)
+      await loader.put(block.cid, block.bytes, signal ? { signal } : undefined)
       return block.cid
     },
 

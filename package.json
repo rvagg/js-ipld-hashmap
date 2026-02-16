@@ -4,37 +4,54 @@
   "description": "A JavaScript implementation of the IPLD HashMap specification",
   "main": "ipld-hashmap.js",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./ipld-hashmap.js",
+      "types": "./types/ipld-hashmap.d.ts"
+    }
+  },
+  "types": "types/ipld-hashmap.d.ts",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "lint": "standard",
     "test:node": "c8 --check-coverage --exclude schema-validate.js --exclude test/ --branches 100 --functions 100 --lines 100 mocha test/*-test.js",
     "test:browser": "polendina --page --worker --serviceworker --cleanup test/*-test.js",
     "test": "npm run lint && npm run build:types && npm run test:node && npm run test:browser",
     "coverage": "c8 --reporter=html mocha test/*-test.js && npm_config_yes=true npx st -d coverage -p 8080",
-    "build": "npm run build:types",
+    "build": "npm run docs && npm run build:types",
     "build:types": "tsc --build",
     "docs": "jsdoc4readme --readme ipld-hashmap.js",
+    "prepublishOnly": "npm run build",
     "schema-validator": "npm_config_yes=true npx ipld-schema-validator to-js hashmap.ipldsch  > schema-validate.js"
   },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "iamap": "^4.0.0",
+    "iamap": "^5.1.0",
     "ipld-schema": "^3.0.3",
-    "ipld-schema-describer": "^3.0.6",
-    "multiformats": "^13.0.1"
+    "ipld-schema-describer": "^3.0.21",
+    "multiformats": "^13.4.2"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^9.0.8",
-    "@rvagg/chai-as-promised": "^8.0.1",
-    "@types/chai": "^4.3.11",
-    "@types/mocha": "^10.0.6",
-    "c8": "^9.0.0",
-    "chai": "^5.0.0",
+    "@ipld/dag-cbor": "^9.2.5",
+    "@rvagg/chai-as-promised": "^8.0.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.6",
+    "@semantic-release/npm": "^13.1.4",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "c8": "^10.1.3",
+    "chai": "^6.2.2",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "jsdoc4readme": "^1.4.0",
-    "mocha": "^10.2.0",
-    "polendina": "^3.2.1",
-    "standard": "^17.1.0",
-    "typescript": "^5.3.3"
+    "mocha": "^11.7.5",
+    "polendina": "^3.2.19",
+    "semantic-release": "^25.0.3",
+    "standard": "^17.1.2",
+    "typescript": "^5.9.3"
   },
   "repository": {
     "type": "git",
