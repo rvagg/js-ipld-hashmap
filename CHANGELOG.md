@@ -1,3 +1,13 @@
+## [3.1.0](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.9...v3.1.0) (2026-02-16)
+
+### Features
+
+* dep & CI updates & minor modernisation ([#75](https://github.com/rvagg/js-ipld-hashmap/issues/75)) ([2226c8c](https://github.com/rvagg/js-ipld-hashmap/commit/2226c8c599febc4ddfe76fc40b7cc99a46598e74))
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 4.0.1 to 4.0.2 ([#74](https://github.com/rvagg/js-ipld-hashmap/issues/74)) ([1c58f3f](https://github.com/rvagg/js-ipld-hashmap/commit/1c58f3f650b861061e4d1688a63dbf4b673b70d6))
+
 ## [3.0.9](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.8...v3.0.9) (2024-01-11)
 
 
