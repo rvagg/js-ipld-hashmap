@@ -2,30 +2,34 @@ import { CID } from 'multiformats/cid'
 import { BlockCodec } from 'multiformats/codecs/interface'
 import { MultihashHasher } from 'multiformats/hashes/interface'
 
+export interface SignalOptions {
+  signal?: AbortSignal
+}
+
 export interface HashMap<V> {
   readonly cid: CID
 
-  get (key: string | Uint8Array): Promise<V|void>
+  get (key: string | Uint8Array, options?: SignalOptions): Promise<V|void>
 
-  has (key: string | Uint8Array): Promise<boolean>
+  has (key: string | Uint8Array, options?: SignalOptions): Promise<boolean>
 
-  size (): Promise<number>
+  size (options?: SignalOptions): Promise<number>
 
-  set (key: string | Uint8Array, value: V): Promise<void>
+  set (key: string | Uint8Array, value: V, options?: SignalOptions): Promise<void>
 
-  delete (key: string | Uint8Array): Promise<void>
+  delete (key: string | Uint8Array, options?: SignalOptions): Promise<void>
 
-  values (): AsyncIterable<V>
+  values (options?: SignalOptions): AsyncIterable<V>
 
-  keys (): AsyncIterable<string>
+  keys (options?: SignalOptions): AsyncIterable<string>
 
-  keysRaw (): AsyncIterable<Uint8Array>
+  keysRaw (options?: SignalOptions): AsyncIterable<Uint8Array>
 
-  entries (): AsyncIterable<[string, V]>
+  entries (options?: SignalOptions): AsyncIterable<[string, V]>
 
-  entriesRaw (): AsyncIterable<[Uint8Array, V]>
+  entriesRaw (options?: SignalOptions): AsyncIterable<[Uint8Array, V]>
 
-  cids (): AsyncIterable<CID>
+  cids (options?: SignalOptions): AsyncIterable<CID>
 }
 
 export interface CreateOptions<Codec extends number, V> {
@@ -43,6 +47,6 @@ export interface CreateOptions<Codec extends number, V> {
 }
 
 export interface Loader {
-  get (cid: CID): Promise<Uint8Array>
-  put (cid: CID, bytes: Uint8Array): Promise<void>
+  get (cid: CID, options?: SignalOptions): Promise<Uint8Array>
+  put (cid: CID, bytes: Uint8Array, options?: SignalOptions): Promise<void>
 }

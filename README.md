@@ -83,17 +83,17 @@ Be aware that each mutation operation will create at least one new block, stored
 ### Contents
 
  * [`class HashMap`](#HashMap)
- * [`async HashMap#get(key)`](#HashMap_get)
- * [`async HashMap#has(key)`](#HashMap_has)
- * [`async HashMap#size()`](#HashMap_size)
- * [`async HashMap#set(key, value)`](#HashMap_set)
- * [`async HashMap#delete(key)`](#HashMap_delete)
- * [`async HashMap#values()`](#HashMap_values)
- * [`async HashMap#keys()`](#HashMap_keys)
- * [`async HashMap#keysRaw()`](#HashMap_keysRaw)
+ * [`async HashMap#get(key[, options])`](#HashMap_get)
+ * [`async HashMap#has(key[, options])`](#HashMap_has)
+ * [`async HashMap#size([options])`](#HashMap_size)
+ * [`async HashMap#set(key, value[, options])`](#HashMap_set)
+ * [`async HashMap#delete(key[, options])`](#HashMap_delete)
+ * [`async HashMap#values([options])`](#HashMap_values)
+ * [`async HashMap#keys([options])`](#HashMap_keys)
+ * [`async HashMap#keysRaw([options])`](#HashMap_keysRaw)
  * [`async * HashMapImpl#entries()`](#HashMapImpl_entries)
  * [`async * HashMapImpl#entriesRaw()`](#HashMapImpl_entriesRaw)
- * [`async HashMap#cids()`](#HashMap_cids)
+ * [`async HashMap#cids([options])`](#HashMap_cids)
  * [`async HashMapImpl.create(loader, options)`](#HashMapImpl__create)
  * [`async HashMapImpl.load(loader, root, options)`](#HashMapImpl__load)
 
@@ -116,15 +116,16 @@ operations will accept or return template type `V`.
 Properties:
 
 * `cid` `(CID)`: The _current_ CID of this HashMap. It is important to note that this CID
-  will change when successfully performing mutation operations [`HashMap#set`](#HashMap_set) or
-  [`HashMap#delete`](#HashMap_delete). Where a [`HashMap#set`](#HashMap_set) does not change an existing value (because
-  a key already exists with that value) or [`HashMap#delete`](#HashMap_delete) does not delete an existing
+  will change when successfully performing mutation operations `set()` or
+  `delete()`. Where a `set()` does not change an existing value (because
+  a key already exists with that value) or `delete()` does not delete an existing
   key/value pair (because it doesn't already exist in this HashMap), the `cid` will not change.
 
 <a name="HashMap_get"></a>
-### `async HashMap#get(key)`
+### `async HashMap#get(key[, options])`
 
 * `key` `(string|Uint8Array)`: The key of the key/value pair entry to look up in this HashMap.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
 
 * Returns:  `Promise<(V|undefined)>`: The value (of template type `V`) stored for the given `key` which may be any type serializable
   by IPLD, or a CID to an existing IPLD object. This should match what was provided by
@@ -134,9 +135,10 @@ Properties:
 Fetches the value of the provided `key` stored in this HashMap, if it exists.
 
 <a name="HashMap_has"></a>
-### `async HashMap#has(key)`
+### `async HashMap#has(key[, options])`
 
 * `key` `(string|Uint8Array)`: The key of the key/value pair entry to look up in this HashMap.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
 
 * Returns:  `Promise<boolean>`: `true` if the `key` exists in this HashMap, `false` otherwise.
 
@@ -144,19 +146,22 @@ Check whether the provided `key` exists in this HashMap. The equivalent of perfo
 `map.get(key) !== undefined`.
 
 <a name="HashMap_size"></a>
-### `async HashMap#size()`
+### `async HashMap#size([options])`
 
-* Returns:  `Promise<number>`: An integer greater than or equal to zero indicating the number of key/value pairs stored
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
+
+* Returns:  `Promise<number>`: An integer greater than or equal to zero indicating the number of key/value pairse stored
   in this HashMap.
 
 Count the number of key/value pairs stored in this HashMap.
 
 <a name="HashMap_set"></a>
-### `async HashMap#set(key, value)`
+### `async HashMap#set(key, value[, options])`
 
 * `key` `(string|Uint8Array)`: The key of the new key/value pair entry to store in this HashMap.
 * `value` `(V)`: The value (of template type `V`) to store, either an object that can be
   serialized inline via IPLD or a CID pointing to another object.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
 
 * Returns:  `Promise<void>`
 
@@ -174,9 +179,10 @@ different CID. This CID should be used to refer to this collection in the backin
 persistence is required.
 
 <a name="HashMap_delete"></a>
-### `async HashMap#delete(key)`
+### `async HashMap#delete(key[, options])`
 
 * `key` `(string|Uint8Array)`: The key of the key/value pair entry to remove from this HashMap.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
 
 * Returns:  `Promise<void>`
 
@@ -191,9 +197,11 @@ different CID. This CID should be used to refer to this collection in the backin
 persistence is required.
 
 <a name="HashMap_values"></a>
-### `async HashMap#values()`
+### `async HashMap#values([options])`
 
-* Returns:  `AsyncIterator<V>`: An async iterator that yields values (of template type `V`) of the type stored in this
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
+
+* Returns:  `AsyncIterable<V>`: An async iterator that yields values (of template type `V`) of the type stored in this
   collection, either inlined objects or CIDs.
 
 Asynchronously emit all values that exist within this HashMap collection.
@@ -202,9 +210,11 @@ This will cause a full traversal of all nodes that make up this collection so ma
 many block loads from the backing store if the collection is large.
 
 <a name="HashMap_keys"></a>
-### `async HashMap#keys()`
+### `async HashMap#keys([options])`
 
-* Returns:  `AsyncIterator<string>`: An async iterator that yields string keys stored in this collection.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
+
+* Returns:  `AsyncIterable<string>`: An async iterator that yields string keys stored in this collection.
 
 Asynchronously emit all keys that exist within this HashMap collection **as strings** rather
 than the stored bytes.
@@ -213,9 +223,11 @@ This will cause a full traversal of all nodes that make up this
 collection so may result in many block loads from the backing store if the collection is large.
 
 <a name="HashMap_keysRaw"></a>
-### `async HashMap#keysRaw()`
+### `async HashMap#keysRaw([options])`
 
-* Returns:  `AsyncIterator<Uint8Array>`: An async iterator that yields string keys stored in this collection.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
+
+* Returns:  `AsyncIterable<Uint8Array>`: An async iterator that yields string keys stored in this collection.
 
 Asynchronously emit all keys that exist within this HashMap collection **as their raw bytes**
 rather than being converted to a string.
@@ -230,9 +242,11 @@ many block loads from the backing store if the collection is large.
 ### `async * HashMapImpl#entriesRaw()`
 
 <a name="HashMap_cids"></a>
-### `async HashMap#cids()`
+### `async HashMap#cids([options])`
 
-* Returns:  `AsyncIterator<CID>`: An async iterator that yields CIDs for the blocks that comprise this HashMap.
+* `options` `(SignalOptions, optional)`: Optional parameters. `signal` can be used to abort the operation.
+
+* Returns:  `AsyncIterable<CID>`: An async iterator that yields CIDs for the blocks that comprise this HashMap.
 
 Asynchronously emit all CIDs for blocks that make up this HashMap.
 

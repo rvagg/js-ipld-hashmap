@@ -15,6 +15,23 @@ async function toArray (asyncIterator) {
   return result
 }
 
+function trackingStore () {
+  const store = {
+    map: new Map(),
+    getSignals: [],
+    putSignals: [],
+    get (k, options) {
+      store.getSignals.push(options && options.signal)
+      return store.map.get(k.toString())
+    },
+    put (k, v, options) {
+      store.putSignals.push(options && options.signal)
+      store.map.set(k.toString(), v)
+    }
+  }
+  return store
+}
+
 async function execute (options = {}) {
   const expectedEntries = 'foo:bar bar:baz baz:boom'.split(' ').map((e) => e.split(':'))
 
@@ -98,5 +115,92 @@ describe('Basics', () => {
 
   it('simple usage (bitWidth=8, bucketSize=5)', async () => {
     await execute({ bucketSize: 5, bitWidth: 8 })
+  })
+})
+
+describe('AbortSignal', () => {
+  // Use bucketSize=2 (minimum) to force child nodes with fewer entries
+  const sigOpts = { blockHasher, blockCodec, bucketSize: 2 }
+
+  async function populatedMap (store) {
+    const map = await createHashMap(store, sigOpts)
+    // Enough entries to guarantee child nodes with bucketSize=2
+    for (let i = 0; i < 50; i++) {
+      await map.set(`key${i}`, `value${i}`)
+    }
+    return map
+  }
+
+  it('signal is forwarded to loader.get and loader.put', async () => {
+    const store = trackingStore()
+    const ac = new AbortController()
+    const map = await populatedMap(store)
+
+    store.putSignals.length = 0
+    await map.set('extra', 'val', { signal: ac.signal })
+    assert.ok(store.putSignals.some((s) => s === ac.signal), 'signal forwarded to put()')
+
+    // Reload from CID so child nodes must be loaded from store
+    const map2 = await loadHashMap(store, map.cid, sigOpts)
+    store.getSignals.length = 0
+    await map2.get('key0', { signal: ac.signal })
+    assert.ok(store.getSignals.some((s) => s === ac.signal), 'signal forwarded to get()')
+  })
+
+  it('pre-aborted signal throws on set, get, has, delete, size', async () => {
+    const store = trackingStore()
+    const map = await populatedMap(store)
+
+    const signal = AbortSignal.abort()
+
+    const ops = [
+      map.set('x', 'y', { signal }),
+      map.get('key0', { signal }),
+      map.has('key0', { signal }),
+      map.delete('key0', { signal }),
+      map.size({ signal })
+    ]
+    for (const op of ops) {
+      try {
+        await op
+        assert.fail('expected throw')
+      } catch (err) {
+        assert.strictEqual(err.name, 'AbortError')
+      }
+    }
+  })
+
+  it('pre-aborted signal aborts iterators during traversal', async () => {
+    const store = trackingStore()
+    const map = await populatedMap(store)
+
+    // Reload so child nodes require store.load during iteration
+    const map2 = await loadHashMap(store, map.cid, sigOpts)
+    const signal = AbortSignal.abort()
+
+    // Iterators may yield entries from the already-loaded root bucket
+    // before hitting a child node traversal that checks the signal.
+    // Verify that iteration is aborted before all entries are yielded.
+    const iterators = [
+      map2.values({ signal }),
+      map2.keys({ signal }),
+      map2.keysRaw({ signal }),
+      map2.entries({ signal }),
+      map2.entriesRaw({ signal }),
+      map2.cids({ signal })
+    ]
+    for (const iter of iterators) {
+      let count = 0
+      try {
+        for await (const _ of iter) { // eslint-disable-line no-unused-vars
+          count++
+        }
+        assert.fail('expected throw')
+      } catch (err) {
+        assert.strictEqual(err.name, 'AbortError')
+        // Confirm iteration was cut short (50 entries in map, plus CIDs for cids())
+        assert.ok(count < 50, `only yielded ${count} items before abort`)
+      }
+    }
   })
 })
