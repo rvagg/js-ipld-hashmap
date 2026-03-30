@@ -1,3 +1,10 @@
+## [3.1.1](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.0...v3.1.1) (2026-03-30)
+
+### Trivial Changes
+
+* **deps-dev:** bump typescript from 5.9.3 to 6.0.2 ([24692ba](https://github.com/rvagg/js-ipld-hashmap/commit/24692ba2770afbf95ba586807a0f2ea70eee11b1))
+* update deps & upgrade to typescript 6 ([c3feb69](https://github.com/rvagg/js-ipld-hashmap/commit/c3feb694fdb298c37d7d2a63ffcb9d6533269a4e))
+
 ## [3.1.0](https://github.com/rvagg/js-ipld-hashmap/compare/v3.0.9...v3.1.0) (2026-02-16)
 
 ### Features
