@@ -25,8 +25,7 @@
     "skipLibCheck": true,
     "stripInternal": true,
     "resolveJsonModule": true,
-    "emitDeclarationOnly": true,
-    "baseUrl": "."
+    "emitDeclarationOnly": true
   },
   "exclude": [
     "node_modules",
