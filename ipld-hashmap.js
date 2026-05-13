@@ -406,7 +406,6 @@ export async function _load (loader, root, options) {
       if (typeof options.hashBytes !== 'number') {
         throw new TypeError('\'hashBytes\' option must be a number')
       }
-      /* c8 ignore next 2 */
       return options.hashBytes
     }
     return DEFAULT_HASH_BYTES
