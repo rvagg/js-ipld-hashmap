@@ -34,7 +34,7 @@
     "multiformats": "^13.4.2"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^9.2.5",
+    "@ipld/dag-cbor": "^10.0.1",
     "@rvagg/chai-as-promised": "^8.0.2",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
