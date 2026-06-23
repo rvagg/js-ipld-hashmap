@@ -1,3 +1,9 @@
+## [3.1.7](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.6...v3.1.7) (2026-06-23)
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 6.0.3 to 7.0.0 ([#85](https://github.com/rvagg/js-ipld-hashmap/issues/85)) ([6ff5c46](https://github.com/rvagg/js-ipld-hashmap/commit/6ff5c4639cf5e3a7187025a6ad034fc2b37c4ad5))
+
 ## [3.1.6](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.5...v3.1.6) (2026-06-22)
 
 ### Trivial Changes
