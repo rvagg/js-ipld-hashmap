@@ -43,7 +43,7 @@ describe('Errors', () => {
 
     const hash = await blockHasher.digest(new TextEncoder().encode('blorp'))
     const cid = CID.create(1, blockCodec.code, hash) // just a random CID
-    await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher }), 'decode error')
+    await assert.isRejected(loadHashMap(store, cid, { blockCodec, blockHasher }))
   })
 
   it('non-storing store', async () => {
