@@ -8,7 +8,7 @@ updates:
       prefix: 'chore'
       include: 'scope'
     cooldown:
-      default-days: 2
+      default-days: 7
     groups:
       github-actions-minor-patch:
         patterns: ['*']
@@ -21,7 +21,7 @@ updates:
       prefix: 'chore'
       include: 'scope'
     cooldown:
-      default-days: 5
+      default-days: 7
     groups:
       npm-minor-patch:
         patterns: ['*']
