@@ -1,3 +1,5 @@
+## [3.1.11](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.10...v3.1.11) (2026-07-30)
+
 ## [3.1.10](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.9...v3.1.10) (2026-07-29)
 
 ## [3.1.9](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.8...v3.1.9) (2026-07-21)
