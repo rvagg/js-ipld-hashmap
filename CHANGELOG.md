@@ -2,9 +2,22 @@
 
 ## [3.1.10](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.9...v3.1.10) (2026-07-29)
 
+### Trivial Changes
+
+* **deps-dev:** bump typescript from 6.0.3 to 7.0.2 ([9e91dc9](https://github.com/rvagg/js-ipld-hashmap/commit/9e91dc9d8b5c42d36ee604260bca29b134a4e65f))
+* fixes for ts@7 ([1ea7968](https://github.com/rvagg/js-ipld-hashmap/commit/1ea79683b03f092ea0d46349378aaa5ff305bc92))
+
 ## [3.1.9](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.8...v3.1.9) (2026-07-21)
 
+### Trivial Changes
+
+* **ci:** slow down dependabot, add depsound, pin actions by hash ([#89](https://github.com/rvagg/js-ipld-hashmap/issues/89)) ([aabb490](https://github.com/rvagg/js-ipld-hashmap/commit/aabb4900ae61830c3a3b4552dd9859cf45400f98))
+
 ## [3.1.8](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.7...v3.1.8) (2026-07-03)
+
+### Tests
+
+* adjust for new error shape from multiformats 14.0.3 ([df79a00](https://github.com/rvagg/js-ipld-hashmap/commit/df79a00990d0e78546d938b7c58f409f8ec552d4))
 
 ## [3.1.7](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.6...v3.1.7) (2026-06-23)
 
