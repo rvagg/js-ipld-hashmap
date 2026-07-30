@@ -1,3 +1,9 @@
+## [3.1.12](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.11...v3.1.12) (2026-07-30)
+
+### Trivial Changes
+
+* downgrade broken changelog maker, backfill entries ([#92](https://github.com/rvagg/js-ipld-hashmap/issues/92)) ([a6b81f4](https://github.com/rvagg/js-ipld-hashmap/commit/a6b81f461b03f112f9f1f236d488a383fd420b65))
+
 ## [3.1.11](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.10...v3.1.11) (2026-07-30)
 
 ## [3.1.10](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.9...v3.1.10) (2026-07-29)
