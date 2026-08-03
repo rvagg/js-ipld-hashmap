@@ -1,3 +1,9 @@
+## [3.1.14](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.13...v3.1.14) (2026-08-03)
+
+### Trivial Changes
+
+* **deps-dev:** bump @semantic-release/git from 10.0.1 to 11.0.1 ([#93](https://github.com/rvagg/js-ipld-hashmap/issues/93)) ([7945e69](https://github.com/rvagg/js-ipld-hashmap/commit/7945e6953289e55f18603fe6292cbcc955eb2de9))
+
 ## [3.1.13](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.12...v3.1.13) (2026-08-03)
 
 ### Trivial Changes
