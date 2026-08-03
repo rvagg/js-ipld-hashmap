@@ -1,3 +1,9 @@
+## [3.1.13](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.12...v3.1.13) (2026-08-03)
+
+### Trivial Changes
+
+* **deps-dev:** bump @semantic-release/changelog from 6.0.3 to 7.0.0 ([#94](https://github.com/rvagg/js-ipld-hashmap/issues/94)) ([213005b](https://github.com/rvagg/js-ipld-hashmap/commit/213005b884e6cb32d6cfe281cdf08c696d2a6e72))
+
 ## [3.1.12](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.11...v3.1.12) (2026-07-30)
 
 ### Trivial Changes
