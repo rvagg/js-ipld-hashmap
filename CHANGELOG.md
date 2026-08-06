@@ -1,3 +1,9 @@
+## [3.1.15](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.14...v3.1.15) (2026-08-06)
+
+### Trivial Changes
+
+* **deps:** bump the github-actions-minor-patch group with 2 updates ([#96](https://github.com/rvagg/js-ipld-hashmap/issues/96)) ([a3c3f07](https://github.com/rvagg/js-ipld-hashmap/commit/a3c3f07822663a231bd69ac4401da2583651c3bf))
+
 ## [3.1.14](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.13...v3.1.14) (2026-08-03)
 
 ### Trivial Changes
