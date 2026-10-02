@@ -1,3 +1,9 @@
+## [3.1.16](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.15...v3.1.16) (2026-10-02)
+
+### Trivial Changes
+
+* **deps-dev:** bump mocha from 11.8.0 to 12.0.2 ([#99](https://github.com/rvagg/js-ipld-hashmap/issues/99)) ([f965fb9](https://github.com/rvagg/js-ipld-hashmap/commit/f965fb9c38d497f367ba6c8233d6df6379270591))
+
 ## [3.1.15](https://github.com/rvagg/js-ipld-hashmap/compare/v3.1.14...v3.1.15) (2026-08-06)
 
 ### Trivial Changes
